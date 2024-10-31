@@ -22,6 +22,13 @@ public class Profile(string firstName, string lastName, int dni, string email, i
 
     public Profile(CreateProfileCommand command) : this(string.Empty, string.Empty, 0, string.Empty, 0, string.Empty, 0L)
     {
+        FirstName = command.FirstName;
+        LastName = command.LastName;
+        Dni = command.Dni;
+        Email = command.Email;
+        Age = command.Age;
+        Location = command.Location;
+        UserId = command.UserId;
     }
     public void UpdateProfileInformation(UpdateProfileCommand command)
     {
