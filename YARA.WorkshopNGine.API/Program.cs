@@ -1,11 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.Shared.Infrastructure.Interfaces.APS.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+
+// Add Configuration for Routing
+builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
 
 // Add Database Connection
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -41,9 +44,6 @@ builder.Services.AddSwaggerGen(
             Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0.html")
         }
     }); });
-
-// Configure Lowercase URLs
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
