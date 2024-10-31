@@ -1,5 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.Profiles.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Profiles.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Profiles.Domain.Repositories;
+using YARA.WorkshopNGine.API.Profiles.Domain.Services;
+using YARA.WorkshopNGine.API.Profiles.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.Profiles.interfaces.ACL;
+using YARA.WorkshopNGine.API.Profiles.interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
 using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
@@ -53,6 +60,12 @@ builder.Services.AddSwaggerGen(
     }); });
 
 // Configure Dependency Injection
+
+// Profiles Bounded Context Injection Configuration
+builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
+builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

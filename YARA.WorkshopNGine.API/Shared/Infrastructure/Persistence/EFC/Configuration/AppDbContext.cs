@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
@@ -33,6 +34,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<User>().Property(u => u.Password).IsRequired();
         builder.Entity<User>().Property(u => u.RoleId).IsRequired();
         
+        
+        // Profile Context
+        builder.Entity<Profile>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.FirstName).HasMaxLength(100);
+            entity.Property(p => p.LastName).HasMaxLength(100);
+            entity.Property(p => p.Dni).IsRequired();
+            entity.Property(p => p.Email).HasMaxLength(200);
+            entity.Property(p => p.Age);
+            entity.Property(p => p.Location).HasMaxLength(100);
+            entity.Property(p => p.UserId).IsRequired();
+        });
         
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
