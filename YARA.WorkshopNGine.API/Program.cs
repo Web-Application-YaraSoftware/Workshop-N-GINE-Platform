@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,21 +11,19 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Configure Database Context and Logging Levels
-/*
- builder.Services.AddDbContext<AppDbContext>(options =>
- {
-    if(connectionString != null)
-      if (builder.Environment.IsDevelopment())
-      options.UseMySQL(connectionString)
-      .LogTo(Console.WriteLine, LogLevel.Information);
-      .EnableSensitiveDataLogging()
-      .EnableDetailedErrors();
-      else if (builder.Environment.IsProduction())
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    if (connectionString == null) return;
+    if (builder.Environment.IsDevelopment()) 
         options.UseMySQL(connectionString)
-        .LogTo(Console.WriteLine, LogLevel.Error);
-        .EnableDetailedErrors();
- });
- */
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    else if (builder.Environment.IsProduction()) 
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Error)
+            .EnableDetailedErrors();
+}); 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -48,14 +48,12 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 var app = builder.Build();
 
 // Verify Database Objects are Created
-/*
- using (var scope = app.Services.CreateScope())
- {
+using (var scope = app.Services.CreateScope())
+{
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
- }
- */
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
