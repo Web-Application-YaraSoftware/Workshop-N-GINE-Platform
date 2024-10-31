@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Interfaces.APS.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,11 @@ builder.Services.AddSwaggerGen(
             Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0.html")
         }
     }); });
+
+// Configure Dependency Injection
+
+// Shared Bounded Context Injection Configuration
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
