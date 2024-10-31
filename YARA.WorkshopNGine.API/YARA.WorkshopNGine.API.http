@@ -1,0 +1,6 @@
+@YARA.WorkshopNGine.API_HostAddress = http://localhost:5059
+
+GET {{YARA.WorkshopNGine.API_HostAddress}}
+Accept: application/json
+
+###
