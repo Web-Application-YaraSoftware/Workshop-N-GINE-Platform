@@ -7,6 +7,11 @@ using YARA.WorkshopNGine.API.Profiles.Domain.Services;
 using YARA.WorkshopNGine.API.Profiles.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Profiles.interfaces.ACL;
 using YARA.WorkshopNGine.API.Profiles.interfaces.ACL.Services;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
+using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
+using YARA.WorkshopNGine.API.IAM.Domain.Services;
+using YARA.WorkshopNGine.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Interfaces.APS.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -64,6 +69,15 @@ builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// IAM Bounded Context Injection Configuration
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleCommandService, RoleCommandService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+
+// Event Handlers
+builder.Services.AddHostedService<ApplicationReadyEventHandler>();
 
 var app = builder.Build();
 
