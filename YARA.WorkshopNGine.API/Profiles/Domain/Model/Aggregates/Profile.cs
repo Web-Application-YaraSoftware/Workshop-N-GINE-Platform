@@ -1,4 +1,6 @@
-﻿namespace YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
+﻿using YARA.WorkshopNGine.API.Profiles.Domain.Model.Commands;
+
+namespace YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 
 public class Profile(string firstName, string lastName, int dni, string email, int age, string location, long userId)
 {
@@ -18,7 +20,16 @@ public class Profile(string firstName, string lastName, int dni, string email, i
 
     public long UserId { get; private set; } = userId;
 
-    public Profile() : this(string.Empty, string.Empty, 0, string.Empty, 0, string.Empty, 0L)
+    public Profile(CreateProfileCommand command) : this(string.Empty, string.Empty, 0, string.Empty, 0, string.Empty, 0L)
     {
+    }
+    public void UpdateProfileInformation(UpdateProfileCommand command)
+    {
+        FirstName = command.FirstName;
+        LastName = command.LastName;
+        Dni = command.Dni;
+        Email = command.Email;
+        Age = command.Age;
+        Location = command.Location;
     }
 }
