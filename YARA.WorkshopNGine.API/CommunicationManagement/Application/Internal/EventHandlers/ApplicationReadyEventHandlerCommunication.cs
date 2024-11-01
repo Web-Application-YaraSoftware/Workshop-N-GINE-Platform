@@ -3,12 +3,12 @@ using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Services;
 
 namespace YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.EventHandlers;
 
-public class ApplicationReadyEventHandler : IHostedService
+public class ApplicationReadyEventHandlerCommunication : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ApplicationReadyEventHandler> _logger;
+    private readonly ILogger<ApplicationReadyEventHandlerCommunication> _logger;
 
-    public ApplicationReadyEventHandler(IServiceProvider serviceProvider, ILogger<ApplicationReadyEventHandler> logger)
+    public ApplicationReadyEventHandlerCommunication(IServiceProvider serviceProvider, ILogger<ApplicationReadyEventHandlerCommunication> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;

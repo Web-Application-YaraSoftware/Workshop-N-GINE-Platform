@@ -60,13 +60,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Communication Management Bounded Context Injection Configuration
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
 builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
 builder.Services.AddScoped<INotificationStateCommandService, NotificationStateCommandService>();
 builder.Services.AddScoped<INotificationStateRepository, NotificationStateRepository>();
 
 //Event Handlers
-builder.Services.AddHostedService<ApplicationReadyEventHandler>();
+builder.Services.AddHostedService<ApplicationReadyEventHandlerCommunication>();
 
 var app = builder.Build();
 
