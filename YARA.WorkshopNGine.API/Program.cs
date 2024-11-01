@@ -1,5 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.EventHandlers;
+using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Repositories;
+using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Services;
+using YARA.WorkshopNGine.API.CommunicationManagement.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Profiles.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.Profiles.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.Profiles.Domain.Repositories;
@@ -70,6 +76,12 @@ builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 // Shared Bounded Context Injection Configuration
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Communication Management Bounded Context Injection Configuration
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
+builder.Services.AddScoped<INotificationStateCommandService, NotificationStateCommandService>();
+builder.Services.AddScoped<INotificationStateRepository, NotificationStateRepository>();
+
 // IAM Bounded Context Injection Configuration
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleCommandService, RoleCommandService>();
@@ -78,6 +90,7 @@ builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
+builder.Services.AddHostedService<ApplicationReadyEventHandlerCommunication>();
 
 var app = builder.Build();
 
