@@ -8,4 +8,8 @@ public interface IUserCommandService
 {
     Task Handle(SignUpCommand command);
     Task<User> Handle(SignInCommand command);
+
+    Task<User> Handle(CreateUserWithRoleClientCommand command);
+    
+    Task<User> Handle(CreateUserWithRoleMechanicCommand command);
 }
