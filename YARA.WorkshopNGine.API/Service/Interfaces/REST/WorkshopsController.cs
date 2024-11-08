@@ -21,7 +21,7 @@ public class WorkshopsController(IWorkshopCommandService workshopCommandService,
         OperationId = "GetWorkshopById")]
     [SwaggerResponse(200, "The workshop was found", typeof(WorkshopResource))]
     [SwaggerResponse(404, "The workshop was not found")]
-    public async Task<IActionResult> GetWorkshopById(long workshopId)
+    public async Task<IActionResult> GetWorkshopById([FromRoute] long workshopId)
     {
         var getWorkshopByIdQuery = new GetWorkshopByIdQuery(workshopId);
         var workshop = await workshopQueryService.Handle(getWorkshopByIdQuery);
@@ -53,7 +53,7 @@ public class WorkshopsController(IWorkshopCommandService workshopCommandService,
         OperationId = "UpdateWorkshop")]
     [SwaggerResponse(200, "The workshop was updated", typeof(WorkshopResource))]
     [SwaggerResponse(400, "The workshop was not updated")]
-    public async Task<IActionResult> UpdateWorkshop(long workshopId, [FromBody] UpdateWorkshopResource updateWorkshopResource)
+    public async Task<IActionResult> UpdateWorkshop([FromRoute] long workshopId, [FromBody] UpdateWorkshopResource updateWorkshopResource)
     {
         var updateWorkshopCommand = UpdateWorkshopCommandFromResourceAssembler.ToCommandFromResource(updateWorkshopResource);
         var workshop = await workshopCommandService.Handle(workshopId, updateWorkshopCommand);
