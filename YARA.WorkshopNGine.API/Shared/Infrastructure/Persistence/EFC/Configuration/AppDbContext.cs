@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.ValueoObjects;
@@ -6,6 +6,7 @@ using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -71,6 +72,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(p => p.Location).HasMaxLength(100);
             entity.Property(p => p.UserId).IsRequired();
         });
+        
+        // Service Context
+        builder.Entity<Workshop>().HasKey(w => w.Id);
+        builder.Entity<Workshop>().Property(w => w.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Workshop>().Property(w => w.Name).IsRequired().HasMaxLength(100);
         
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
