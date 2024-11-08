@@ -15,10 +15,14 @@ using YARA.WorkshopNGine.API.Profiles.interfaces.ACL;
 using YARA.WorkshopNGine.API.Profiles.interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
 using YARA.WorkshopNGine.API.IAM.Domain.Services;
 using YARA.WorkshopNGine.API.IAM.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.IAM.Interfaces.ACL;
+using YARA.WorkshopNGine.API.IAM.Interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.Service.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Service.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.Service.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.Service.Domain.Repositories;
 using YARA.WorkshopNGine.API.Service.Domain.Services;
@@ -92,8 +96,12 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleCommandService, RoleCommandService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 // Service Bounded Context Injection Configuration
+builder.Services.AddScoped<ExternalIamService>();
+builder.Services.AddScoped<ExternalProfileService>();
 builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
 builder.Services.AddScoped<IWorkshopCommandService, WorkshopCommandService>();
 builder.Services.AddScoped<IWorkshopQueryService, WorkshopQueryService>();
