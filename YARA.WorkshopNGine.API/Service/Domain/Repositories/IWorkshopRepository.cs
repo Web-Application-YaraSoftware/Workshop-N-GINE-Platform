@@ -6,4 +6,6 @@ namespace YARA.WorkshopNGine.API.Service.Domain.Repositories;
 public interface IWorkshopRepository : IBaseRepository<Workshop>
 {
     bool ExistsByName(string name);
+    
+    bool ExistsById(long id);
 }

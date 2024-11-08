@@ -11,4 +11,9 @@ public class WorkshopRepository(AppDbContext context) : BaseRepository<Workshop>
     {
         return Context.Set<Workshop>().Any(workshop => workshop.Name.Equals(name));
     }
+
+    public bool ExistsById(long id)
+    {
+        return Context.Set<Workshop>().Any(workshop => workshop.Id == id);
+    }
 }
