@@ -105,6 +105,9 @@ builder.Services.AddScoped<ExternalProfileService>();
 builder.Services.AddScoped<IWorkshopRepository, WorkshopRepository>();
 builder.Services.AddScoped<IWorkshopCommandService, WorkshopCommandService>();
 builder.Services.AddScoped<IWorkshopQueryService, WorkshopQueryService>();
+builder.Services.AddScoped<IInterventionRepository, InterventionRepository>();
+builder.Services.AddScoped<IInterventionCommandService, InterventionCommandService>();
+builder.Services.AddScoped<IInterventionQueryService, InterventionQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();

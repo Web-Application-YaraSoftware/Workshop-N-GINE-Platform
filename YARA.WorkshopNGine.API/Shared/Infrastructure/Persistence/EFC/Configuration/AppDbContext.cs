@@ -8,6 +8,7 @@ using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
 namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -78,6 +79,28 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Workshop>().Property(w => w.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Workshop>().Property(w => w.Name).IsRequired().HasMaxLength(100);
         
+        builder.Entity<Intervention>().HasKey(i => i.Id);
+        builder.Entity<Intervention>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Intervention>().Property(i => i.WorkshopId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.VehicleId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.MechanicLeaderId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Intervention>()
+            .HasMany(i => i.Tasks)
+            .WithOne(t => t.Intervention)
+            .HasForeignKey(t => t.InterventionId)
+            .IsRequired();
+        
+        builder.Entity<Task>().HasKey(t => t.Id);
+        builder.Entity<Task>().Property(t => t.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Task>().Property(t => t.MechanicAssignedId).IsRequired();
+        builder.Entity<Task>().Property(t => t.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Task>()
+            .HasOne(t => t.Intervention)
+            .WithMany(i => i.Tasks)
+            .HasForeignKey(t => t.InterventionId)
+            .IsRequired();
+
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
     }
