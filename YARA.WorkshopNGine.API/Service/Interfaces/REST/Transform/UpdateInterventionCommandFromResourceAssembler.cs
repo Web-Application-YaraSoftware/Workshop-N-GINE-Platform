@@ -12,7 +12,8 @@ public class UpdateInterventionCommandFromResourceAssembler
             resource.VehicleId,
             resource.MechanicLeaderId,
             resource.Description,
-            (InterventionTypes)resource.Type
+            (InterventionTypes)resource.Type,
+            resource.ScheduledAt
         );
     }
 }

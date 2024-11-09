@@ -2,4 +2,4 @@
 
 namespace YARA.WorkshopNGine.API.Service.Domain.Model.Commands;
 
-public record UpdateInterventionCommand(long VehicleId, long MechanicLeaderId, string Description, InterventionTypes Type);
+public record UpdateInterventionCommand(long VehicleId, long MechanicLeaderId, string Description, InterventionTypes Type, DateTime ScheduledDate);

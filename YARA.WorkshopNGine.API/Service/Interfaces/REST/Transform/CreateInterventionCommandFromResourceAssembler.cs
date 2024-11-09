@@ -7,6 +7,6 @@ public class CreateInterventionCommandFromResourceAssembler
 {
     public static CreateInterventionCommand ToCommandFromResource(CreateInterventionResource resource)
     {
-        return new CreateInterventionCommand(resource.WorkshopId, resource.VehicleId, resource.MechanicLeaderId, resource.Description);
+        return new CreateInterventionCommand(resource.WorkshopId, resource.VehicleId, resource.MechanicLeaderId, resource.Description, resource.ScheduledAt);
     }
 }
