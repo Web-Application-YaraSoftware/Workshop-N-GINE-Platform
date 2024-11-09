@@ -28,6 +28,7 @@ public partial class Intervention
         VehicleId = command.VehicleId;
         MechanicLeaderId = command.MechanicLeaderId;
         Description = command.Description;
+        ScheduledAt = command.ScheduledDate;
     }
     
     public void Update(UpdateInterventionCommand command)
@@ -36,5 +37,6 @@ public partial class Intervention
         MechanicLeaderId = command.MechanicLeaderId;
         Description = command.Description;
         Type = command.Type;
+        ScheduledAt = command.ScheduledDate;
     }
 }
