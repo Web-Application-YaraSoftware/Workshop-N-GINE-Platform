@@ -13,4 +13,15 @@ public partial class Task
         Description = string.Empty;
         Status = TaskStatuses.Pending;
     }
+    
+    public string StatusToString()
+    {
+        return Status switch
+        {
+            TaskStatuses.Pending => "Pending",
+            TaskStatuses.InProgress => "In Progress",
+            TaskStatuses.Completed => "Completed",
+            _ => "Unknown"
+        };
+    }
 }

@@ -70,8 +70,8 @@ public class WorkshopsUsersController(IWorkshopCommandService workshopCommandSer
     public async Task<IActionResult> AddMechanicToWorkshop([FromRoute] long workshopId, [FromBody] CreateMechanicResource resource)
     {
         var createMechanicCommand = CreateMechanicCommandFromResourceAssembler.ToCommandFromResource(resource);
-        var workshop = await workshopCommandService.Handle(workshopId, createMechanicCommand);
-        if (workshop == null) return BadRequest();
-        return CreatedAtAction(nameof(GetMechanicsForWorkshop), new { workshopId, userId = workshop.Id }, workshop.Id);
+        var userId = await workshopCommandService.Handle(workshopId, createMechanicCommand);
+        if (userId == null) return BadRequest();
+        return CreatedAtAction(nameof(GetMechanicsForWorkshop), new { workshopId, userId = userId.Id }, userId.Id);
     }
 }

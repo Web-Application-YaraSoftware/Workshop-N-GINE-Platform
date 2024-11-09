@@ -22,10 +22,16 @@ public partial class Task
         InterventionId = interventionId;
     }
 
-    public Task(CreateTaskCommand command) : this()
+    public Task(CreateTaskCommand command, long interventionId) : this()
     {
         MechanicAssignedId = command.MechanicAssignedId;
         Description = command.Description;
-        InterventionId = command.InterventionId;
+        InterventionId = interventionId;
+    }
+    
+    public void Update(UpdateTaskCommand command)
+    {
+        MechanicAssignedId = command.MechanicAssignedId;
+        Description = command.Description;
     }
 }
