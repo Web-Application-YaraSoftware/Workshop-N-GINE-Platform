@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Commands;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Queries;
 using YARA.WorkshopNGine.API.Service.Domain.Services;
 using YARA.WorkshopNGine.API.Service.Interfaces.REST.Resources;
@@ -60,5 +61,50 @@ public class InterventionsController(IInterventionCommandService interventionCom
         if (intervention == null) return BadRequest();
         var resource = InterventionResourceFromEntityAssembler.ToResourceFromEntity(intervention);
         return Ok(resource);
+    }
+    
+    [HttpPost("{interventionId:long}/in-progresses")]
+    [SwaggerOperation(
+        Summary = "Sets an intervention in-progress",
+        Description = "Sets an intervention in-progress with a given identifier",
+        OperationId = "SetInterventionInProgress")]
+    [SwaggerResponse(200, "The intervention was set in-progress")]
+    [SwaggerResponse(400, "The intervention was not set in-progress")]
+    public async Task<IActionResult> SetInterventionInProgress(long interventionId)
+    {
+        var inProgressInterventionCommand = new InProgressInterventionCommand(interventionId);
+        var intervention = await interventionCommandService.Handle(inProgressInterventionCommand);
+        if (intervention == null || intervention != interventionId || intervention == 0) return BadRequest();
+        return Ok(new { message = "Intervention set in-progress successfully" });
+    }
+    
+    [HttpPost("{interventionId:long}/confirmations")]
+    [SwaggerOperation(
+        Summary = "Completes an intervention",
+        Description = "Completes an intervention with a given identifier",
+        OperationId = "CompleteIntervention")]
+    [SwaggerResponse(200, "The intervention was completed")]
+    [SwaggerResponse(400, "The intervention was not completed")]
+    public async Task<IActionResult> CompleteIntervention(long interventionId)
+    {
+        var completeInterventionCommand = new CompleteInterventionCommand(interventionId);
+        var intervention = await interventionCommandService.Handle(completeInterventionCommand);
+        if (intervention == null || intervention != interventionId || intervention == 0) return BadRequest();
+        return Ok(new { message = "Intervention completed successfully" });
+    }
+    
+    [HttpPost("{interventionId:long}/cancellations")]
+    [SwaggerOperation(
+        Summary = "Cancels an intervention",
+        Description = "Cancels an intervention with a given identifier",
+        OperationId = "CancelIntervention")]
+    [SwaggerResponse(200, "The intervention was cancelled")]
+    [SwaggerResponse(400, "The intervention was not cancelled")]
+    public async Task<IActionResult> CancelIntervention(long interventionId)
+    {
+        var cancelInterventionCommand = new CancelInterventionCommand(interventionId);
+        var intervention = await interventionCommandService.Handle(cancelInterventionCommand);
+        if (intervention == null || intervention != interventionId || intervention == 0) return BadRequest();
+        return Ok(new { message = "Intervention cancelled successfully" });
     }
 }
