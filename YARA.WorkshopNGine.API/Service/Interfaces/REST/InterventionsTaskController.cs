@@ -11,13 +11,13 @@ using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 namespace YARA.WorkshopNGine.API.Service.Interfaces.REST;
 
 [ApiController]
-[Route("api/v1/interventions/{interventionId:long}")]
+[Route("api/v1/interventions/{interventionId:long}/tasks")]
 [Produces(MediaTypeNames.Application.Json)]
 [Tags("Interventions")]
 public class InterventionsTaskController(IInterventionCommandService interventionCommandService, IInterventionQueryService interventionQueryService)
     : ControllerBase
 {
-    [HttpGet("tasks")]
+    [HttpGet("")]
     [SwaggerOperation(
         Summary = "Gets all tasks from an intervention",
         Description = "Gets all tasks from an intervention with a given identifier",
@@ -41,7 +41,7 @@ public class InterventionsTaskController(IInterventionCommandService interventio
         return Ok(taskResources);
     }
     
-    [HttpPost("tasks")]
+    [HttpPost("")]
     [SwaggerOperation(
         Summary = "Adds a task to an intervention",
         Description = "Adds a task to an intervention with a given information",
@@ -57,7 +57,7 @@ public class InterventionsTaskController(IInterventionCommandService interventio
         return CreatedAtAction(nameof(AddTaskToIntervention), new { interventionId, taskId = task.Id }, taskResource);
     }
     
-    [HttpPut("tasks/{taskId:long}")]
+    [HttpPut("{taskId:long}")]
     [SwaggerOperation(
         Summary = "Updates a task from an intervention",
         Description = "Updates a task from an intervention with a given identifier",
@@ -73,7 +73,7 @@ public class InterventionsTaskController(IInterventionCommandService interventio
         return Ok(taskResource);
     }
     
-    [HttpDelete("tasks/{taskId:long}")]
+    [HttpDelete("{taskId:long}")]
     [SwaggerOperation(
         Summary = "Deletes a task from an intervention",
         Description = "Deletes a task from an intervention with a given identifier",
