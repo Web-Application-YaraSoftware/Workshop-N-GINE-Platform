@@ -10,6 +10,10 @@ public interface IInterventionQueryService
     
     Task<IEnumerable<Intervention>> Handle(GetAllInterventionsByWorkshopQuery query);
     
+    Task<IEnumerable<Intervention>> Handle(long workshopId, GetAllInterventionsByWorkshopAndMechanicLeader query);
+    
+    Task<IEnumerable<Intervention>> Handle(long workshopId, GetAllInterventionsByWorkshopAndMechanicAssistant query);
+    
     Task<IEnumerable<Task>> Handle(long interventionId, GetAllTasksByInterventionQuery query);
     
     Task<IEnumerable<Task>> Handle(long interventionId, GetAllTasksByInterventionAndMechanicAssignedQuery query);

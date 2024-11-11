@@ -14,9 +14,24 @@ public class InterventionQueryService(IInterventionRepository interventionReposi
         return await interventionRepository.FindByIdAsync(query.InterventionId);
     }
 
-    public Task<IEnumerable<Intervention>> Handle(GetAllInterventionsByWorkshopQuery query)
+    public async Task<IEnumerable<Intervention>> Handle(GetAllInterventionsByWorkshopQuery query)
     {
-        return interventionRepository.FindAllByWorkshopIdAsync(query.WorkshopId);
+        return await interventionRepository.FindAllByWorkshopIdAsync(query.WorkshopId);
+    }
+
+    public async Task<IEnumerable<Intervention>> Handle(long workshopId, GetAllInterventionsByWorkshopAndMechanicLeader query)
+    {
+        if(!workshopRepository.ExistsById(workshopId))
+            throw new Exception($"Workshop with the id '{workshopId}' does not exist.");
+        return await interventionRepository.FindAllByWorkshopAndMechanicLeaderIdAsync(workshopId, query.MechanicLeaderId);
+    }
+
+    public async Task<IEnumerable<Intervention>> Handle(long workshopId, GetAllInterventionsByWorkshopAndMechanicAssistant query)
+    {
+        if(!workshopRepository.ExistsById(workshopId))
+            throw new Exception($"Workshop with the id '{workshopId}' does not exist.");
+        var interventions = await interventionRepository.FindAllByWorkshopAndIsNotMechanicLeaderIdAsync(workshopId, query.MechanicAssistantId);
+        return interventions.Where(i => i.ExistsAnyTaskByMechanicAssignedId(query.MechanicAssistantId));
     }
 
     public async Task<IEnumerable<Task>> Handle(long interventionId, GetAllTasksByInterventionQuery query)
