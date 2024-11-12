@@ -17,7 +17,7 @@ namespace YARA.WorkshopNGine.API.Service.Interfaces.REST;
 public class InterventionsTaskController(IInterventionCommandService interventionCommandService, IInterventionQueryService interventionQueryService)
     : ControllerBase
 {
-    [HttpGet("")]
+    [HttpGet]
     [SwaggerOperation(
         Summary = "Gets all tasks from an intervention",
         Description = "Gets all tasks from an intervention with a given identifier",
@@ -41,7 +41,7 @@ public class InterventionsTaskController(IInterventionCommandService interventio
         return Ok(taskResources);
     }
     
-    [HttpPost("")]
+    [HttpPost]
     [SwaggerOperation(
         Summary = "Adds a task to an intervention",
         Description = "Adds a task to an intervention with a given information",
