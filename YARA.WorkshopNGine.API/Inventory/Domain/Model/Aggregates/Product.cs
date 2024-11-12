@@ -42,4 +42,14 @@ public class Product
         StockQuantity = command.StockQuantity;
         LowStockThreshold = command.LowStockThreshold;
     }
+    
+    public bool IsAvailableRequest(int quantity)
+    {
+        return StockQuantity >= quantity;
+    }
+    
+    public void Request(int quantity)
+    {
+        StockQuantity -= quantity;
+    }
 }
