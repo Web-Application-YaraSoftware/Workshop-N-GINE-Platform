@@ -7,6 +7,7 @@ using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
@@ -99,6 +100,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .HasOne(t => t.Intervention)
             .WithMany(i => i.Tasks)
             .HasForeignKey(t => t.InterventionId)
+            .IsRequired();
+        builder.Entity<Task>()
+            .HasMany(t => t.Checkpoints)
+            .WithOne(c => c.Task)
+            .HasForeignKey(c => c.TaskId)
+            .IsRequired();
+        
+        builder.Entity<Checkpoint>().HasKey(c => c.Id);
+        builder.Entity<Checkpoint>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Checkpoint>().Property(c => c.TaskId).IsRequired();
+        builder.Entity<Checkpoint>().Property(c => c.Name).IsRequired().HasMaxLength(240);
+        builder.Entity<Checkpoint>()
+            .HasOne(c => c.Task)
+            .WithMany(t => t.Checkpoints)
+            .HasForeignKey(c => c.TaskId)
             .IsRequired();
 
         // Apply SnakeCase Naming Convention
