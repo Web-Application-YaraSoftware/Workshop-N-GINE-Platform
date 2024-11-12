@@ -129,6 +129,9 @@ builder.Services.AddScoped<IVehicleQueryService, VehicleQueryService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
 builder.Services.AddScoped<IProductQueryService, ProductQueryService>();
+builder.Services.AddScoped<IProductRequestRepository, ProductRequestRepository>();
+builder.Services.AddScoped<IProductRequestCommandService, ProductRequestCommandService>();
+builder.Services.AddScoped<IProductRequestQueryService, ProductRequestQueryService>();
 
 // Device Management Bounded Context Injection Configuration
 builder.Services.AddScoped<IIotDeviceRepository, IotDeviceRepository>();
