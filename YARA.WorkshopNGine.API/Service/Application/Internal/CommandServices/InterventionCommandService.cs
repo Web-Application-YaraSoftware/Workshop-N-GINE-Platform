@@ -263,4 +263,51 @@ public class InterventionCommandService(IInterventionRepository interventionRepo
             return null;
         }
     }
+
+    public async Task<long?> Handle(long interventionId, InProgressTaskCommand command)
+    {
+        var intervention = await interventionRepository.FindByIdWithTasksAsync(interventionId);
+        if (intervention == null)
+            throw new Exception($"Intervention with the id '{interventionId}' does not exist.");
+        // TODO: Only the mechanic assigned is able to do this
+        // TODO: Validate if the mechanic assigned id exists
+        // TODO: Validate if the mechanic assigned id is available
+        intervention.StartTask(command.TaskId);
+        try
+        {
+            interventionRepository.Update(intervention);
+            await unitOfWork.CompleteAsync();
+            return command.TaskId;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred while starting the task: {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task<long?> Handle(long interventionId, CompleteTaskCommand command)
+    {
+        var intervention = await interventionRepository.FindByIdWithTasksAsync(interventionId);
+        if (intervention == null)
+            throw new Exception($"Intervention with the id '{interventionId}' does not exist.");
+        if (!intervention.IsInProgressTask(command.TaskId))
+            throw new Exception($"Task with the id '{command.TaskId}' is not in progress.");
+        // TODO: Only the mechanic assigned is able to do this
+        // TODO: Validate if the mechanic assigned id exists
+        // TODO: Validate if the mechanic assigned id is available
+        // TODO: Validate the all requested products are being confirmed with the bounded context Inventory
+        intervention.CompleteTask(command.TaskId);
+        try
+        {
+            interventionRepository.Update(intervention);
+            await unitOfWork.CompleteAsync();
+            return command.TaskId;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred while completing the task: {e.Message}");
+            return null;
+        }
+    }
 }
