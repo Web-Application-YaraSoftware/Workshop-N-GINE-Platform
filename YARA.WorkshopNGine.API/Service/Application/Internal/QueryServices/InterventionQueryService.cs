@@ -1,4 +1,5 @@
 ﻿using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Queries;
 using YARA.WorkshopNGine.API.Service.Domain.Repositories;
 using YARA.WorkshopNGine.API.Service.Domain.Services;
@@ -46,5 +47,13 @@ public class InterventionQueryService(IInterventionRepository interventionReposi
         var intervention = await interventionRepository.FindByIdWithTasksAsync(interventionId);
         var tasks = intervention?.FindAllTasksByMechanicAssignedId(query.MechanicAssignedId) ?? new List<Task>();
         return tasks;
+    }
+
+    public async Task<IEnumerable<Checkpoint>> Handle(long interventionId, long taskId, GetAllCheckpointsByTaskAndInterventionQuery query)
+    {
+        var intervention = await interventionRepository.FindByIdWithTaskAndCheckpointsAsync(interventionId);
+        var task = intervention?.FindTaskById(taskId);
+        var checkpoints = task?.Checkpoints ?? new List<Checkpoint>();
+        return checkpoints;
     }
 }
