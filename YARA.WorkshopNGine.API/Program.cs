@@ -7,6 +7,10 @@ using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.QueryS
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Repositories;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Services;
 using YARA.WorkshopNGine.API.CommunicationManagement.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.Device.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Device.Domain.Repositories;
+using YARA.WorkshopNGine.API.Device.Domain.Services;
+using YARA.WorkshopNGine.API.Device.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Profiles.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.Profiles.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.Profiles.Domain.Repositories;
@@ -125,6 +129,10 @@ builder.Services.AddScoped<IVehicleQueryService, VehicleQueryService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
 builder.Services.AddScoped<IProductQueryService, ProductQueryService>();
+
+// Device Management Bounded Context Injection Configuration
+builder.Services.AddScoped<IIotDeviceRepository, IotDeviceRepository>();
+builder.Services.AddScoped<IIotDeviceQueryService, IotDeviceQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
