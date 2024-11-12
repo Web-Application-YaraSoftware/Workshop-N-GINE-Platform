@@ -14,9 +14,9 @@ namespace YARA.WorkshopNGine.API.Device.Interfaces.REST;
 public class IotDevicesController(IIotDeviceQueryService iotDeviceQueryService)
     : ControllerBase
 {
-    [HttpGet( "{vehicleId:long}" )]
+    [HttpGet]
     [SwaggerResponse(200, "The Iot Device was found", typeof(IotDeviceResource))]
-    public async Task<IActionResult> GetIotDeviceByVehicleId(long vehicleId)
+    public async Task<IActionResult> GetIotDeviceByVehicleId([FromQuery] long vehicleId)
     {
         var getIotDeviceByVehicleIdQuery = new GetIotDeviceByVehicleIdQuery( vehicleId );
         var iotDevice = await iotDeviceQueryService.Handle( getIotDeviceByVehicleIdQuery );
