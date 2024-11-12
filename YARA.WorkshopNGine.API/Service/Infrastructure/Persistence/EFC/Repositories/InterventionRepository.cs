@@ -15,6 +15,19 @@ public class InterventionRepository(AppDbContext context) : BaseRepository<Inter
         return await Context.Set<Intervention>().Where(i => i.WorkshopId == workshopId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Intervention>> FindAllByWorkshopAndMechanicLeaderIdAsync(long workshopId, long mechanicLeaderId)
+    {
+        return await Context.Set<Intervention>().Where(i => i.WorkshopId == workshopId && i.MechanicLeaderId == mechanicLeaderId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Intervention>> FindAllByWorkshopAndIsNotMechanicLeaderIdAsync(long workshopId, long mechanicLeaderId)
+    {
+        return await Context.Set<Intervention>()
+            .Where(i => i.WorkshopId == workshopId && i.MechanicLeaderId != mechanicLeaderId)
+            .Include(i => i.Tasks)
+            .ToListAsync();
+    }
+
     public bool ExistsById(long id)
     {
         return Context.Set<Intervention>().Any(i => i.Id == id);
@@ -24,6 +37,14 @@ public class InterventionRepository(AppDbContext context) : BaseRepository<Inter
     {
         return await Context.Set<Intervention>()
             .Include(i => i.Tasks)
+            .FirstOrDefaultAsync(i => i.Id == id);
+    }
+
+    public async Task<Intervention?> FindByIdWithTaskAndCheckpointsAsync(long id)
+    {
+        return await Context.Set<Intervention>()
+            .Include(i => i.Tasks)
+            .ThenInclude(t => t.Checkpoints)
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 

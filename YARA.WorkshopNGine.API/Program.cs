@@ -26,6 +26,11 @@ using YARA.WorkshopNGine.API.IAM.Domain.Services;
 using YARA.WorkshopNGine.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL.Services;
+using YARA.WorkshopNGine.API.Inventory.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Inventory.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Inventory.Domain.Repositories;
+using YARA.WorkshopNGine.API.Inventory.Domain.Services;
+using YARA.WorkshopNGine.API.Inventory.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Service.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.Service.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.Service.Application.Internal.QueryServices;
@@ -40,6 +45,8 @@ using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Add Configuration for JSON Serialization
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // Add Configuration for Routing
@@ -114,6 +121,14 @@ builder.Services.AddScoped<IWorkshopQueryService, WorkshopQueryService>();
 builder.Services.AddScoped<IInterventionRepository, InterventionRepository>();
 builder.Services.AddScoped<IInterventionCommandService, InterventionCommandService>();
 builder.Services.AddScoped<IInterventionQueryService, InterventionQueryService>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IVehicleCommandService, VehicleCommandService>();
+builder.Services.AddScoped<IVehicleQueryService, VehicleQueryService>();
+
+// Inventory Bounded Context Injection Configuration
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
+builder.Services.AddScoped<IProductQueryService, ProductQueryService>();
 
 // Device Management Bounded Context Injection Configuration
 builder.Services.AddScoped<IIotDeviceRepository, IotDeviceRepository>();
@@ -122,6 +137,15 @@ builder.Services.AddScoped<IIotDeviceQueryService, IotDeviceQueryService>();
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
 builder.Services.AddHostedService<ApplicationReadyEventHandlerCommunication>();
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -139,6 +163,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Add CORS Middleware to ASP.NET Core Pipeline
+app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 

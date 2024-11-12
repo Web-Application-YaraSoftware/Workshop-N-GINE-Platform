@@ -1,5 +1,6 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
+using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Profiles.Domain.Model.Queries;
 using YARA.WorkshopNGine.API.Profiles.Domain.Services;
 using YARA.WorkshopNGine.API.Profiles.interfaces.REST.Resources;
@@ -13,8 +14,8 @@ namespace YARA.WorkshopNGine.API.Profiles.interfaces.REST;
 public class ProfilesController(IProfileQueryService profileQueryService, IProfileCommandService profileCommandService)
     : ControllerBase
 {
-    [HttpGet("profile/{profileId:long}")]
-    public async Task<IActionResult> GetProfileById(long profileId)
+    [HttpGet("{profileId:long}")]
+    public async Task<IActionResult> GetProfileById([FromRoute] long profileId)
     {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = await profileQueryService.Handle(getProfileByIdQuery);
@@ -23,21 +24,25 @@ public class ProfilesController(IProfileQueryService profileQueryService, IProfi
         return Ok(profileResource);
     }
 
-    [HttpGet("dni/{dni:int}")]
-    public async Task<IActionResult> GetProfileByDni(int dni)
+    [HttpGet]
+    public async Task<IActionResult> GetProfile([FromQuery] int userId, [FromQuery] int dni)
     {
-        var getProfileByDniQuery = new GetProfileByDniQuery(dni);
-        var profile = await profileQueryService.Handle(getProfileByDniQuery);
-        if (profile == null) return NotFound();
-        var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
-        return Ok(profileResource);
-    }
-    
-    [HttpGet("user-id/{userId:long}")]
-    public async Task<IActionResult> GetProfileByUserId(long userId)
-    {
-        var getProfileByUserIdQuery = new GetProfileByUserIdQuery(userId);
-        var profile = await profileQueryService.Handle(getProfileByUserIdQuery);
+        Profile? profile;
+        if (userId != 0)
+        {
+            var getProfileByUserIdQuery = new GetProfileByUserIdQuery(userId);
+            profile = await profileQueryService.Handle(getProfileByUserIdQuery);
+            
+        }
+        else if (dni != 0)
+        {
+            var getProfileByDniQuery = new GetProfileByDniQuery(dni);
+            profile = await profileQueryService.Handle(getProfileByDniQuery);
+        }
+        else
+        {
+            return BadRequest();
+        }
         if (profile == null) return NotFound();
         var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
         return Ok(profileResource);
@@ -51,15 +56,5 @@ public class ProfilesController(IProfileQueryService profileQueryService, IProfi
         if (profile == null) return BadRequest();
         var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
         return Ok(profileResource);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateProfile(CreateProfileResource resource)
-    {
-        var createProfileCommand = CreateProfileCommandFromResourceAssembler.ToCommandFromResource(resource);
-        var profile = await profileCommandService.Handle(createProfileCommand);
-        if (profile == null) return BadRequest();
-        var profileResource = ProfileResourceFromEntityAssembler.ToResourceFromEntity(profile);
-        return CreatedAtAction(nameof(GetProfileById), new { profileId = profileResource.Id }, profileResource);
     }
 }

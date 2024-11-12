@@ -9,7 +9,9 @@ using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
+using YARA.WorkshopNGine.API.Inventory.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
@@ -103,7 +105,43 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(i => i.Tasks)
             .HasForeignKey(t => t.InterventionId)
             .IsRequired();
+        builder.Entity<Task>()
+            .HasMany(t => t.Checkpoints)
+            .WithOne(c => c.Task)
+            .HasForeignKey(c => c.TaskId)
+            .IsRequired();
         
+        builder.Entity<Checkpoint>().HasKey(c => c.Id);
+        builder.Entity<Checkpoint>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Checkpoint>().Property(c => c.TaskId).IsRequired();
+        builder.Entity<Checkpoint>().Property(c => c.Name).IsRequired().HasMaxLength(240);
+        builder.Entity<Checkpoint>()
+            .HasOne(c => c.Task)
+            .WithMany(t => t.Checkpoints)
+            .HasForeignKey(c => c.TaskId)
+            .IsRequired();
+        
+        builder.Entity<Vehicle>().HasKey(v => v.Id);
+        builder.Entity<Vehicle>().Property(v => v.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Vehicle>().Property(v => v.LicensePlate).IsRequired().HasMaxLength(10);
+        builder.Entity<Vehicle>().Property(v => v.Brand).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.Model).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.UserId).IsRequired();
+        
+        // Inventory Context
+        builder.Entity<Product>().HasKey(p => p.Id);
+        builder.Entity<Product>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Product>().Property(p => p.Name).IsRequired().HasMaxLength(100);
+        builder.Entity<Product>().Property(p => p.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Product>().Property(p => p.StockQuantity).IsRequired();
+        builder.Entity<Product>().Property(p => p.LowStockThreshold).IsRequired();
+        builder.Entity<Product>().OwnsOne(p => p.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+      
+      
         //Device Context
         builder.Entity<IotDevice>().HasKey(d => d.Id);
         builder.Entity<IotDevice>().Property(d => d.Id).IsRequired().ValueGeneratedOnAdd();
@@ -123,6 +161,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         //fix
         builder.Entity<Code>().Property(c => c.State).IsRequired().HasConversion(e=>e.ToString(), e=>(ECodeState)Enum.Parse(typeof(ECodeState), e));
         
+
 
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
