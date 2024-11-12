@@ -40,6 +40,14 @@ public class InterventionRepository(AppDbContext context) : BaseRepository<Inter
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
+    public async Task<Intervention?> FindByIdWithTaskAndCheckpointsAsync(long id)
+    {
+        return await Context.Set<Intervention>()
+            .Include(i => i.Tasks)
+            .ThenInclude(t => t.Checkpoints)
+            .FirstOrDefaultAsync(i => i.Id == id);
+    }
+
     public bool ExistsByVehicleIdAndStatusIsPending(long vehicleId)
     {
         return Context.Set<Intervention>().Any(i => i.VehicleId == vehicleId && i.Status == InterventionStatuses.Pending);
