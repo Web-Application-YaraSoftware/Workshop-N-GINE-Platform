@@ -22,6 +22,11 @@ using YARA.WorkshopNGine.API.IAM.Domain.Services;
 using YARA.WorkshopNGine.API.IAM.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL.Services;
+using YARA.WorkshopNGine.API.Inventory.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Inventory.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Inventory.Domain.Repositories;
+using YARA.WorkshopNGine.API.Inventory.Domain.Services;
+using YARA.WorkshopNGine.API.Inventory.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Service.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.Service.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.Service.Application.Internal.QueryServices;
@@ -115,6 +120,11 @@ builder.Services.AddScoped<IInterventionQueryService, InterventionQueryService>(
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleCommandService, VehicleCommandService>();
 builder.Services.AddScoped<IVehicleQueryService, VehicleQueryService>();
+
+// Inventory Bounded Context Injection Configuration
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCommandService, ProductCommandService>();
+builder.Services.AddScoped<IProductQueryService, ProductQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();

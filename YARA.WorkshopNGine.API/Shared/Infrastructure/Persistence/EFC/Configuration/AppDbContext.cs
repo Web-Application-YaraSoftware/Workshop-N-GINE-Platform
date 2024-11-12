@@ -6,6 +6,7 @@ using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
+using YARA.WorkshopNGine.API.Inventory.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
@@ -123,6 +124,19 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Vehicle>().Property(v => v.Brand).IsRequired().HasMaxLength(30);
         builder.Entity<Vehicle>().Property(v => v.Model).IsRequired().HasMaxLength(30);
         builder.Entity<Vehicle>().Property(v => v.UserId).IsRequired();
+        
+        // Inventory Context
+        builder.Entity<Product>().HasKey(p => p.Id);
+        builder.Entity<Product>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Product>().Property(p => p.Name).IsRequired().HasMaxLength(100);
+        builder.Entity<Product>().Property(p => p.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Product>().Property(p => p.StockQuantity).IsRequired();
+        builder.Entity<Product>().Property(p => p.LowStockThreshold).IsRequired();
+        builder.Entity<Product>().OwnsOne(p => p.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
 
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
