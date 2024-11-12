@@ -36,6 +36,8 @@ using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Add Configuration for JSON Serialization
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // Add Configuration for Routing
@@ -115,6 +117,15 @@ builder.Services.AddScoped<IInterventionQueryService, InterventionQueryService>(
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
 builder.Services.AddHostedService<ApplicationReadyEventHandlerCommunication>();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Verify Database Objects are Created
@@ -131,6 +142,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Add CORS Middleware to ASP.NET Core Pipeline
+app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 
