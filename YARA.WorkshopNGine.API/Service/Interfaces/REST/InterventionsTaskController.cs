@@ -87,4 +87,34 @@ public class InterventionsTaskController(IInterventionCommandService interventio
         if (task == null) return BadRequest();
         return NoContent();
     }
+    
+    [HttpPost("{taskId:long}/in-progresses")]
+    [SwaggerOperation(
+        Summary = "Sets a task in-progress",
+        Description = "Sets a task in-progress with a given identifier",
+        OperationId = "SetTaskInProgress")]
+    [SwaggerResponse(200, "The task was set in-progress")]
+    [SwaggerResponse(400, "The task was not set in-progress")]
+    public async Task<IActionResult> SetTaskInProgress([FromRoute] long interventionId, [FromRoute] long taskId)
+    {
+        var inProgressTaskCommand = new InProgressTaskCommand(taskId);
+        var task = await interventionCommandService.Handle(interventionId, inProgressTaskCommand);
+        if (task == null || task != taskId || task == 0) return BadRequest();
+        return Ok(new { message = "Task set in-progress successfully" });
+    }
+    
+    [HttpPost("{taskId:long}/confirmations")]
+    [SwaggerOperation(
+        Summary = "Completes a task",
+        Description = "Completes a task with a given identifier",
+        OperationId = "CompleteTask")]
+    [SwaggerResponse(200, "The task was completed")]
+    [SwaggerResponse(400, "The task was not completed")]
+    public async Task<IActionResult> CompleteTask([FromRoute] long interventionId, [FromRoute] long taskId)
+    {
+        var completeTaskCommand = new CompleteTaskCommand(taskId);
+        var task = await interventionCommandService.Handle(interventionId, completeTaskCommand);
+        if (task == null || task != taskId || task == 0) return BadRequest();
+        return Ok(new { message = "Task completed successfully" });
+    }
 }
