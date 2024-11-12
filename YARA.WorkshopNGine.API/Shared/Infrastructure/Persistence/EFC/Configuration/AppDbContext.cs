@@ -137,6 +137,27 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             workshopId.WithOwner().HasForeignKey("Id");
             workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
         });
+        
+        builder.Entity<ProductRequest>().HasKey(pr => pr.Id);
+        builder.Entity<ProductRequest>().Property(pr => pr.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<ProductRequest>().Property(pr => pr.RequestedQuantity).IsRequired();
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.TaskId, taskId =>
+        {
+            taskId.WithOwner().HasForeignKey("Id");
+            taskId.Property(t => t.Value).HasColumnName("TaskId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.ProductId, productId =>
+        {
+            productId.WithOwner().HasForeignKey("Id");
+            productId.Property(p => p.Value).HasColumnName("ProductId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().Property(pr => pr.Status).IsRequired();
+        
 
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
