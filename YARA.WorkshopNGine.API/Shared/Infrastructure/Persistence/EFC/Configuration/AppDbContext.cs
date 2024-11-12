@@ -2,6 +2,9 @@
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.ValueoObjects;
+using YARA.WorkshopNGine.API.Device.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Device.Domain.Model.Enitites;
+using YARA.WorkshopNGine.API.Device.Domain.Model.ValueObjects;
 using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
@@ -100,6 +103,26 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(i => i.Tasks)
             .HasForeignKey(t => t.InterventionId)
             .IsRequired();
+        
+        //Device Context
+        builder.Entity<IotDevice>().HasKey(d => d.Id);
+        builder.Entity<IotDevice>().Property(d => d.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<IotDevice>().Property(d => d.VehicleId).IsRequired();
+        builder.Entity<IotDevice>()
+            .HasMany(d => d.CodeList)
+            .WithOne(c => c.IotDevice)
+            .HasForeignKey(c => c.IotDeviceId)
+            .IsRequired();
+        
+        builder.Entity<Code>().HasKey(c => c.Id);
+        builder.Entity<Code>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Code>().Property(c => c.Component).IsRequired().HasMaxLength(30);
+        builder.Entity<Code>().Property(c => c.ErrorCode).IsRequired().HasMaxLength(10);
+        builder.Entity<Code>().Property(c => c.Description).IsRequired().HasMaxLength(150);
+        builder.Entity<Code>().Property(c => c.lastUpdated).IsRequired();
+        //fix
+        builder.Entity<Code>().Property(c => c.State).IsRequired().HasConversion(e=>e.ToString(), e=>(ECodeState)Enum.Parse(typeof(ECodeState), e));
+        
 
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
