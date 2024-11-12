@@ -116,6 +116,13 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(t => t.Checkpoints)
             .HasForeignKey(c => c.TaskId)
             .IsRequired();
+        
+        builder.Entity<Vehicle>().HasKey(v => v.Id);
+        builder.Entity<Vehicle>().Property(v => v.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Vehicle>().Property(v => v.LicensePlate).IsRequired().HasMaxLength(10);
+        builder.Entity<Vehicle>().Property(v => v.Brand).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.Model).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.UserId).IsRequired();
 
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
