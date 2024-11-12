@@ -112,6 +112,9 @@ builder.Services.AddScoped<IWorkshopQueryService, WorkshopQueryService>();
 builder.Services.AddScoped<IInterventionRepository, InterventionRepository>();
 builder.Services.AddScoped<IInterventionCommandService, InterventionCommandService>();
 builder.Services.AddScoped<IInterventionQueryService, InterventionQueryService>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<IVehicleCommandService, VehicleCommandService>();
+builder.Services.AddScoped<IVehicleQueryService, VehicleQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
