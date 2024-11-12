@@ -1,5 +1,6 @@
 ﻿using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Commands;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Service.Domain.Repositories;
 using YARA.WorkshopNGine.API.Service.Domain.Services;
 using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
@@ -125,6 +126,79 @@ public class InterventionCommandService(IInterventionRepository interventionRepo
         catch (Exception e)
         {
             Console.WriteLine($"An error occurred while deleting the task: {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task<Checkpoint?> Handle(long interventionId, long taskId, CreateCheckpointCommand command)
+    {
+        var intervention = await interventionRepository.FindByIdWithTasksAsync(interventionId);
+        if (intervention == null)
+            throw new Exception($"Intervention with the id '{interventionId}' does not exist.");
+        // TODO: Only the mechanic assigned is able to do this
+        // TODO: Validate if the mechanic assigned id exists
+        // TODO: Validate if the mechanic assigned id is available
+        if (!intervention.IsInProgress())
+            throw new Exception($"Intervention with the id '{interventionId}' is not in progress.");
+        if (!intervention.IsInProgressTask(taskId))
+            throw new Exception($"Task with the id '{taskId}' is not in progress.");
+        var checkpoint = intervention.AddCheckpoint(taskId, command);
+        try
+        {
+            interventionRepository.Update(intervention);
+            await unitOfWork.CompleteAsync();
+            return checkpoint;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred while creating the checkpoint: {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task<Checkpoint?> Handle(long interventionId, long taskId, long checkpointId, UpdateCheckpointCommand command)
+    {
+        var intervention = await interventionRepository.FindByIdWithTaskAndCheckpointsAsync(interventionId);
+        if (intervention == null)
+            throw new Exception($"Intervention with the id '{interventionId}' does not exist.");
+        // TODO: Only the mechanic assigned is able to do this
+        // TODO: Validate if the mechanic assigned id exists
+        // TODO: Validate if the mechanic assigned id is available
+        if (!intervention.IsInProgress())
+            throw new Exception($"Intervention with the id '{interventionId}' is not in progress.");
+        if (!intervention.IsInProgressTask(taskId))
+            throw new Exception($"Task with the id '{taskId}' is not in progress.");
+        var checkpoint = intervention.UpdateCheckpoint(taskId, checkpointId, command);
+        try
+        {
+            interventionRepository.Update(intervention);
+            await unitOfWork.CompleteAsync();
+            return checkpoint;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred while updating the checkpoint: {e.Message}");
+            return null;
+        }
+    }
+
+    public async Task<long?> Handle(long interventionId, long taskId, DeleteCheckpointCommand command)
+    {
+        var intervention = await interventionRepository.FindByIdWithTaskAndCheckpointsAsync(interventionId);
+        if (intervention == null)
+            throw new Exception($"Intervention with the id '{interventionId}' does not exist.");
+        var isRemoved = intervention.RemoveCheckpoint(taskId, command.CheckpointId);
+        if (!isRemoved)
+            return null;
+        try
+        {
+            interventionRepository.Update(intervention);
+            await unitOfWork.CompleteAsync();
+            return command.CheckpointId;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred while deleting the checkpoint: {e.Message}");
             return null;
         }
     }
