@@ -12,4 +12,9 @@ public class ProductRepository(AppDbContext context) : BaseRepository<Product>(c
     {
         return await Context.Set<Product>().Where(p => p.WorkshopId.Value == workshopId).ToListAsync();
     }
+
+    public bool ExistsById(long productId)
+    {
+        return Context.Set<Product>().Any(p => p.Id == productId);
+    }
 }
