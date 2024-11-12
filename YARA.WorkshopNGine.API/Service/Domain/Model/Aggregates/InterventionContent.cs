@@ -127,6 +127,22 @@ public partial class Intervention
         return task.IsInProgress();
     }
     
+    public void StartTask(long taskId)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        task.Start();
+    }
+    
+    public void CompleteTask(long taskId)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        task.Complete();
+    }
+    
     public bool IsAllTasksCompleted()
     {
         return Tasks.All(t => t.Status == TaskStatuses.Completed);

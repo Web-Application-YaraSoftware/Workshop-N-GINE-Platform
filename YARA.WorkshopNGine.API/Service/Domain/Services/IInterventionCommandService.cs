@@ -28,4 +28,8 @@ public interface IInterventionCommandService
     Task<long?> Handle(CompleteInterventionCommand command);
     
     Task<long?> Handle(CancelInterventionCommand command);
+
+    Task<long?> Handle(long interventionId, InProgressTaskCommand command);
+    
+    Task<long?> Handle(long interventionId, CompleteTaskCommand command);
 }
