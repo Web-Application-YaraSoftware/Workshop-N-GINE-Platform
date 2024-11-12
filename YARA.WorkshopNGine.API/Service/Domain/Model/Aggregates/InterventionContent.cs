@@ -1,4 +1,5 @@
 ﻿using YARA.WorkshopNGine.API.Service.Domain.Model.Commands;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Service.Domain.Model.ValueObjects;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
@@ -56,6 +57,30 @@ public partial class Intervention
         return true;
     }
     
+    public Checkpoint AddCheckpoint(long taskId, CreateCheckpointCommand command)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        return task.AddCheckpoint(command);
+    }
+    
+    public Checkpoint UpdateCheckpoint(long taskId, long checkpointId, UpdateCheckpointCommand command)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        return task.UpdateCheckpoint(checkpointId, command);
+    }
+    
+    public bool RemoveCheckpoint(long taskId, long checkpointId)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        return task.RemoveCheckpoint(checkpointId);
+    }
+    
     public void Start()
     {
         if (Status != InterventionStatuses.Pending)
@@ -92,6 +117,14 @@ public partial class Intervention
     public bool IsInProgress()
     {
         return Status == InterventionStatuses.InProgress;
+    }
+    
+    public bool IsInProgressTask(long taskId)
+    {
+        var task = FindTaskById(taskId);
+        if (task == null)
+            throw new InvalidOperationException($"Task with the id '{taskId}' does not exist.");
+        return task.IsInProgress();
     }
     
     public bool IsAllTasksCompleted()
