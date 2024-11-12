@@ -51,6 +51,20 @@ public partial class Task
         return Status == TaskStatuses.InProgress;
     }
     
+    public void Start()
+    {
+        if (Status != TaskStatuses.Pending)
+            throw new InvalidOperationException("Task is not pending.");
+        Status = TaskStatuses.InProgress;
+    }
+    
+    public void Complete()
+    {
+        if (Status != TaskStatuses.InProgress)
+            throw new InvalidOperationException("Task is not in progress.");
+        Status = TaskStatuses.Completed;
+    }
+    
     public string StatusToString()
     {
         return Status switch
