@@ -2,7 +2,7 @@
 
 public enum Roles
 {
-    Mechanic,
-    WorkshopOwner,
-    Client
+    Mechanic = 1,
+    WorkshopOwner = 2,
+    Client = 3
 }

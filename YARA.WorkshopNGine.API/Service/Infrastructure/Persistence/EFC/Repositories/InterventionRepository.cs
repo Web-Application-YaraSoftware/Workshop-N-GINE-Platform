@@ -15,6 +15,19 @@ public class InterventionRepository(AppDbContext context) : BaseRepository<Inter
         return await Context.Set<Intervention>().Where(i => i.WorkshopId == workshopId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Intervention>> FindAllByWorkshopAndMechanicLeaderIdAsync(long workshopId, long mechanicLeaderId)
+    {
+        return await Context.Set<Intervention>().Where(i => i.WorkshopId == workshopId && i.MechanicLeaderId == mechanicLeaderId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Intervention>> FindAllByWorkshopAndIsNotMechanicLeaderIdAsync(long workshopId, long mechanicLeaderId)
+    {
+        return await Context.Set<Intervention>()
+            .Where(i => i.WorkshopId == workshopId && i.MechanicLeaderId != mechanicLeaderId)
+            .Include(i => i.Tasks)
+            .ToListAsync();
+    }
+
     public bool ExistsById(long id)
     {
         return Context.Set<Intervention>().Any(i => i.Id == id);

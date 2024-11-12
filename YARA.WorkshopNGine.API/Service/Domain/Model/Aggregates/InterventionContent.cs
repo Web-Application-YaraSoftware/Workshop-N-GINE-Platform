@@ -84,6 +84,11 @@ public partial class Intervention
         return Tasks.Where(t => t.MechanicAssignedId == mechanicId).ToList();
     }
     
+    public bool ExistsAnyTaskByMechanicAssignedId(long mechanicId)
+    {
+        return Tasks.Any(t => t.MechanicAssignedId == mechanicId);
+    }
+    
     public bool IsInProgress()
     {
         return Status == InterventionStatuses.InProgress;
