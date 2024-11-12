@@ -15,6 +15,8 @@ public interface IInterventionRepository : IBaseRepository<Intervention>
     
     Task<Intervention?> FindByIdWithTasksAsync(long id);
     
+    Task<Intervention?> FindByIdWithTaskAndCheckpointsAsync(long id);
+    
     bool ExistsByVehicleIdAndStatusIsPending(long vehicleId);
     
     bool ExistsByMechanicLeaderIdAndTimeRange(long mechanicLeaderId, DateTime scheduledAt);

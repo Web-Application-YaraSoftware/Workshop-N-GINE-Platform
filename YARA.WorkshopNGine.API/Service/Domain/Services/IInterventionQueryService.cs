@@ -1,4 +1,5 @@
 ﻿using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Queries;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
@@ -17,4 +18,6 @@ public interface IInterventionQueryService
     Task<IEnumerable<Task>> Handle(long interventionId, GetAllTasksByInterventionQuery query);
     
     Task<IEnumerable<Task>> Handle(long interventionId, GetAllTasksByInterventionAndMechanicAssignedQuery query);
+    
+    Task<IEnumerable<Checkpoint>> Handle(long interventionId, long taskId, GetAllCheckpointsByTaskAndInterventionQuery query);
 }
