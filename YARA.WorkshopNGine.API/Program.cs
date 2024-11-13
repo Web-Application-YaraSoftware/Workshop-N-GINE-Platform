@@ -42,6 +42,7 @@ using YARA.WorkshopNGine.API.Shared.Infrastructure.Interfaces.APS.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.Subscription.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Subscription.Application.Internal.EventHandlers;
 using YARA.WorkshopNGine.API.Subscription.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.Subscription.Domain.Repositories;
 using YARA.WorkshopNGine.API.Subscription.Domain.Services;
@@ -146,10 +147,14 @@ builder.Services.AddScoped<IIotDeviceQueryService, IotDeviceQueryService>();
 builder.Services.AddScoped<ISubscriptionItemRepository, SubscriptionItemRepository>();
 builder.Services.AddScoped<ISubscriptionItemCommandService, SubscriptionItemCommandService>();
 builder.Services.AddScoped<ISubscriptionItemQueryService, SubscriptionItemQueryService>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+builder.Services.AddScoped<IPlanCommandService, PlanCommandService>();
+builder.Services.AddScoped<IPlanQueryService, PlanQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
 builder.Services.AddHostedService<ApplicationReadyEventHandlerCommunication>();
+builder.Services.AddHostedService<SubscriptionApplicationReadyEventHandler>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
