@@ -2,4 +2,4 @@
 
 namespace YARA.WorkshopNGine.API.CommunicationManagement.Interfaces.REST.Resources;
 
-public record NotificationStateResource( int Id, ENotificationState Name);
+public record NotificationStateResource( long Id, ENotificationState Name);
