@@ -10,7 +10,7 @@ using YARA.WorkshopNGine.API.Subscription.Interfaces.REST.Transform;
 namespace YARA.WorkshopNGine.API.Subscription.Interfaces.REST;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class SubscriptionsController(ISubscriptionItemCommandService subscriptionItemCommandService, ISubscriptionItemQueryService subscriptionItemQueryService)
     : ControllerBase
