@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using YARA.WorkshopNGine.API.Billing.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.ValueoObjects;
@@ -180,7 +181,21 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Code>().Property(c => c.lastUpdated).IsRequired();
         //fix
         builder.Entity<Code>().Property(c => c.State).IsRequired().HasConversion(e=>e.ToString(), e=>(ECodeState)Enum.Parse(typeof(ECodeState), e));
-
+    
+        
+        //Billing Context
+        builder.Entity<Invoice>().HasKey(i => i.Id);
+        builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Invoice>().Property(i => i.Amount).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Status).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.IssueDate).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.DueDate).IsRequired(); 
+        builder.Entity<Invoice>().Property(i => i.PaymentDate);
+        builder.Entity<Invoice>().Property(i => i.SubscriptionId).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.WorkshopId).IsRequired();
+        
+        
+        
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();
     }
