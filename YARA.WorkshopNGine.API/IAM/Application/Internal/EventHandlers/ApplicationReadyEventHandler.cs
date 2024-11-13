@@ -1,5 +1,4 @@
-﻿using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
-using YARA.WorkshopNGine.API.IAM.Domain.Model.Commands;
+﻿using YARA.WorkshopNGine.API.IAM.Domain.Model.Commands;
 using YARA.WorkshopNGine.API.IAM.Domain.Services;
 
 namespace YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
