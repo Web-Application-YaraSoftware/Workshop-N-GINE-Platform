@@ -14,6 +14,7 @@ using YARA.WorkshopNGine.API.Inventory.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using YARA.WorkshopNGine.API.Subscription.Domain.Model.Aggregates;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
 namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -179,10 +180,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Code>().Property(c => c.ErrorCode).IsRequired().HasMaxLength(10);
         builder.Entity<Code>().Property(c => c.Description).IsRequired().HasMaxLength(150);
         builder.Entity<Code>().Property(c => c.lastUpdated).IsRequired();
-        //fix
         builder.Entity<Code>().Property(c => c.State).IsRequired().HasConversion(e=>e.ToString(), e=>(ECodeState)Enum.Parse(typeof(ECodeState), e));
     
-        
         //Billing Context
         builder.Entity<Invoice>().HasKey(i => i.Id);
         builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
@@ -195,6 +194,23 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Invoice>().Property(i => i.WorkshopId).IsRequired();
         
         
+        // Subscriptions Context
+        builder.Entity<SubscriptionItem>().HasKey(s => s.Id);
+        builder.Entity<SubscriptionItem>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<SubscriptionItem>().Property(s => s.Status).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.StartedAt).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.EndedAt);
+        builder.Entity<SubscriptionItem>().Property(s => s.CancelledAt);
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.PlanId, planId =>
+        {
+            planId.WithOwner().HasForeignKey("Id");
+            planId.Property(p => p.Value).HasColumnName("PlanId").IsRequired();
+        });
         
         // Apply SnakeCase Naming Convention
         builder.UseSnakeCaseWithPluralizedTableNamingConvention();

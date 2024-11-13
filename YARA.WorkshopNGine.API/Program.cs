@@ -46,6 +46,11 @@ using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Interfaces.APS.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.Subscription.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Subscription.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Subscription.Domain.Repositories;
+using YARA.WorkshopNGine.API.Subscription.Domain.Services;
+using YARA.WorkshopNGine.API.Subscription.Infrastructure.Persistence.EFC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -146,6 +151,11 @@ builder.Services.AddScoped<IIotDeviceQueryService, IotDeviceQueryService>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
 builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
+
+// Subscription Bounded Context Injection Configuration
+builder.Services.AddScoped<ISubscriptionItemRepository, SubscriptionItemRepository>();
+builder.Services.AddScoped<ISubscriptionItemCommandService, SubscriptionItemCommandService>();
+builder.Services.AddScoped<ISubscriptionItemQueryService, SubscriptionItemQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
