@@ -14,6 +14,7 @@ using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using YARA.WorkshopNGine.API.Subscription.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Subscription.Domain.Model.Entities;
 using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
 namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
@@ -197,6 +198,23 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         {
             planId.WithOwner().HasForeignKey("Id");
             planId.Property(p => p.Value).HasColumnName("PlanId").IsRequired();
+        });
+        
+        builder.Entity<Plan>().HasKey(p => p.Id);
+        builder.Entity<Plan>().Property(p => p.Id).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Price).IsRequired();
+        builder.Entity<Plan>().Property(p => p.DurationInMonths).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Type).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Cycle).IsRequired();
+        builder.Entity<Plan>().OwnsOne(p => p.Limitations, limitations =>
+        {
+            limitations.WithOwner().HasForeignKey("Id");
+            limitations.Property(l => l.MaxMechanics).HasColumnName("MaxMechanics").IsRequired();
+            limitations.Property(l => l.MaxClients).HasColumnName("MaxClients").IsRequired();
+            limitations.Property(l => l.MaxActiveInterventions).HasColumnName("MaxActiveInterventions").IsRequired();
+            limitations.Property(l => l.MaxTasksPerMechanic).HasColumnName("MaxTasksPerMechanic").IsRequired();
+            limitations.Property(l => l.MaxItems).HasColumnName("MaxItems").IsRequired();
+            limitations.Property(l => l.MetricsAvailable).HasColumnName("MetricsAvailable").IsRequired();
         });
         
         // Apply SnakeCase Naming Convention
