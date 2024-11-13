@@ -1,6 +1,11 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using YARA.WorkshopNGine.API.Billing.Application.Internal.CommandServices;
+using YARA.WorkshopNGine.API.Billing.Application.Internal.QueryServices;
+using YARA.WorkshopNGine.API.Billing.Domain.Repositories;
+using YARA.WorkshopNGine.API.Billing.Domain.Services;
+using YARA.WorkshopNGine.API.Billing.Infrastructure.Persistence.EFC.Repositories;
 using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.EventHandlers;
 using YARA.WorkshopNGine.API.CommunicationManagement.Application.Internal.QueryServices;
@@ -136,6 +141,11 @@ builder.Services.AddScoped<IProductRequestQueryService, ProductRequestQueryServi
 // Device Management Bounded Context Injection Configuration
 builder.Services.AddScoped<IIotDeviceRepository, IotDeviceRepository>();
 builder.Services.AddScoped<IIotDeviceQueryService, IotDeviceQueryService>();
+
+//Billing Management Bounded Context Injection Configuration
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IInvoiceCommandService, InvoiceCommandService>();
+builder.Services.AddScoped<IInvoiceQueryService, InvoiceQueryService>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
