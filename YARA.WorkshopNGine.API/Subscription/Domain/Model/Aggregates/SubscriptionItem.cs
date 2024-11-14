@@ -52,7 +52,7 @@ public partial class SubscriptionItem
         PlanId = itemCommand.PlanId;
     }
     
-    public SubscriptionItem(CreateSubscriptionItemWithTrialActivate command, PlanId planId) : this()
+    public SubscriptionItem(CreateSubscriptionItemWithTrialActivateCommand command, PlanId planId) : this()
     {
         WorkshopId = command.WorkshopId;
         UserId = command.UserId;
