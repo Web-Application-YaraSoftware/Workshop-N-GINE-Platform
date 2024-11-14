@@ -5,9 +5,11 @@ namespace YARA.WorkshopNGine.API.Subscription.Domain.Repositories;
 
 public interface ISubscriptionItemRepository : IBaseRepository<SubscriptionItem>
 {
-    Task<SubscriptionItem?> FindByWorkshopIdAndStatusIsActiveAsync(long workshopId);
+    Task<SubscriptionItem?> FindLastByWorkshopIdAndUserIdAsync(long workshopId, long userId);
+    
+    Task<SubscriptionItem?> FindLastByIdAsync(long id);
+    
+    bool ExitsByWorkshopIdAndUserIdAndIsTrialAsync(long workshopId, long userId);
     
     Task<IEnumerable<SubscriptionItem>> FindAllByWorkshopIdAsync(long workshopId);
-    
-    bool ExistsByWorkshopIdAndStatusIsActive(long workshopId);
 }
