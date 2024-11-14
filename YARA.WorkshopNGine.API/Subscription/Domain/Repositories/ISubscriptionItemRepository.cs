@@ -7,7 +7,7 @@ public interface ISubscriptionItemRepository : IBaseRepository<SubscriptionItem>
 {
     Task<SubscriptionItem?> FindLastByWorkshopIdAndUserIdAsync(long workshopId, long userId);
     
-    Task<SubscriptionItem?> FindLastByIdAsync(long id);
+    Task<SubscriptionItem?> FindLastByWorkshopIdAsync(long id);
     
     bool ExitsByWorkshopIdAndUserIdAndIsTrialAsync(long workshopId, long userId);
     
