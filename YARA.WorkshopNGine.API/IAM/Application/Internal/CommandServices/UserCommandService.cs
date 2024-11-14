@@ -1,4 +1,5 @@
-﻿using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
+﻿using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices.ACL;
+using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Commands;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
 using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
@@ -7,17 +8,19 @@ using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
 
 namespace YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 
-public class UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork) : IUserCommandService
+public class UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork, ExternalSubscriptionService externalSubscriptionService) : IUserCommandService
 {
     public async Task Handle(SignUpCommand command)
     {
         if (userRepository.ExistsByUsername(command.Username))
             throw new Exception($"Username {command.Username} already exists.");
-        var user = new User(command.Username, command.Password, command.RoleId, command.WorkshopId);
+        const long roleOwner = (long)Roles.WorkshopOwner;
+        var user = new User(command, roleOwner);
         try
         {
             await userRepository.AddAsync(user);
             await unitOfWork.CompleteAsync();
+            await externalSubscriptionService.CreateSubscriptionWithTrialActive(user.WorkshopId, user.Id);
         }
         catch (Exception e)
         {
