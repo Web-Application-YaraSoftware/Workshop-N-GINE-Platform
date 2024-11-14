@@ -52,6 +52,8 @@ using YARA.WorkshopNGine.API.Subscription.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.Subscription.Domain.Repositories;
 using YARA.WorkshopNGine.API.Subscription.Domain.Services;
 using YARA.WorkshopNGine.API.Subscription.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.Subscription.Interfaces.ACL;
+using YARA.WorkshopNGine.API.Subscription.Interfaces.ACL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,14 +102,14 @@ builder.Services.AddSwaggerGen(
 
 // Configure Dependency Injection
 
+// Shared Bounded Context Injection Configuration
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 // Profiles Bounded Context Injection Configuration
 builder.Services.AddScoped<IProfileRepository, ProfileRepository>();
 builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
 builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
 builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
-
-// Shared Bounded Context Injection Configuration
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Communication Management Bounded Context Injection Configuration
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
@@ -160,6 +162,7 @@ builder.Services.AddScoped<ISubscriptionItemQueryService, SubscriptionItemQueryS
 builder.Services.AddScoped<IPlanRepository, PlanRepository>();
 builder.Services.AddScoped<IPlanCommandService, PlanCommandService>();
 builder.Services.AddScoped<IPlanQueryService, PlanQueryService>();
+builder.Services.AddScoped<ISubscriptionContextFacade, SubscriptionContextFacade>();
 
 // Event Handlers
 builder.Services.AddHostedService<ApplicationReadyEventHandler>();
