@@ -78,7 +78,7 @@ public class SubscriptionItemCommandService(ISubscriptionItemRepository subscrip
 
     public async Task<SubscriptionItem?> Handle(CancelSubscriptionItemCommand command)
     {
-        var subscription = await subscriptionItemRepository.FindLastByIdAsync(command.SubscriptionItemId);
+        var subscription = await subscriptionItemRepository.FindLastByWorkshopIdAsync(command.SubscriptionItemId);
         if(subscription == null)
             throw new Exception($"Subscription with {command.SubscriptionItemId} not found");
         switch (subscription.IsTrial)

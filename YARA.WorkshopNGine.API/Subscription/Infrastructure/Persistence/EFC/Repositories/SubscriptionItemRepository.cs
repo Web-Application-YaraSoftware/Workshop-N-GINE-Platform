@@ -14,9 +14,9 @@ public class SubscriptionItemRepository(AppDbContext context) : BaseRepository<S
         return await Context.Set<SubscriptionItem>().Where(s => s.WorkshopId.Value == workshopId && s.UserId.Value == userId).OrderByDescending(s => s.CreatedDate).FirstOrDefaultAsync();
     }
 
-    public async Task<SubscriptionItem?> FindLastByIdAsync(long id)
+    public async Task<SubscriptionItem?> FindLastByWorkshopIdAsync(long id)
     {
-        return await Context.Set<SubscriptionItem>().Where(s => s.Id == id).OrderByDescending(s => s.CreatedDate).FirstOrDefaultAsync();
+        return await Context.Set<SubscriptionItem>().Where(s => s.WorkshopId.Value == id).OrderByDescending(s => s.CreatedDate).FirstOrDefaultAsync();
     }
 
     public bool ExitsByWorkshopIdAndUserIdAndIsTrialAsync(long workshopId, long userId)

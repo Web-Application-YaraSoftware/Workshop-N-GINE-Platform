@@ -10,7 +10,7 @@ public class SubscriptionItemQueryService(ISubscriptionItemRepository subscripti
 {
     public async Task<SubscriptionItem?> Handle(GetLatestSubscriptionItemByWorkshopIdQuery query)
     {
-        return await subscriptionItemRepository.FindLastByIdAsync(query.WorkshopId);
+        return await subscriptionItemRepository.FindLastByWorkshopIdAsync(query.WorkshopId);
     }
 
     public async Task<IEnumerable<SubscriptionItem>> Handle(GetAllSubscriptionItemsByWorkshopIdQuery query)
