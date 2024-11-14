@@ -11,6 +11,8 @@ public interface IInterventionRepository : IBaseRepository<Intervention>
     
     Task<IEnumerable<Intervention>> FindAllByWorkshopAndIsNotMechanicLeaderIdAsync(long workshopId, long mechanicLeaderId);
     
+    Task<IEnumerable<Intervention>> FindAllByVehicleIdAsync(long vehicleId);
+    
     bool ExistsById(long id);
     
     Task<Intervention?> FindByIdWithTasksAsync(long id);

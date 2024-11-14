@@ -28,6 +28,11 @@ public class InterventionRepository(AppDbContext context) : BaseRepository<Inter
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Intervention>> FindAllByVehicleIdAsync(long vehicleId)
+    {
+        return await Context.Set<Intervention>().Where(i => i.VehicleId == vehicleId).ToListAsync();
+    }
+
     public bool ExistsById(long id)
     {
         return Context.Set<Intervention>().Any(i => i.Id == id);
