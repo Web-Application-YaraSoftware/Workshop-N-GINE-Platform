@@ -20,6 +20,11 @@ public class InterventionQueryService(IInterventionRepository interventionReposi
         return await interventionRepository.FindAllByWorkshopIdAsync(query.WorkshopId);
     }
 
+    public async Task<IEnumerable<Intervention>> Handle(GetAllInterventionsByVehicleQuery query)
+    {
+        return await interventionRepository.FindAllByVehicleIdAsync(query.VehicleId);
+    }
+
     public async Task<IEnumerable<Intervention>> Handle(long workshopId, GetAllInterventionsByWorkshopAndMechanicLeader query)
     {
         if(!workshopRepository.ExistsById(workshopId))
