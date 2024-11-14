@@ -10,6 +10,7 @@ public static class NotificationResourceFromEntityAssembler
         return new NotificationResource(
             notification.Id,
             notification.Content,
+            notification.Date,
             notification.UserId,
             notification.StateId,
             notification.Endpoints);
