@@ -25,6 +25,7 @@ using YARA.WorkshopNGine.API.Profiles.interfaces.ACL;
 using YARA.WorkshopNGine.API.Profiles.interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
 using YARA.WorkshopNGine.API.IAM.Domain.Services;
@@ -118,6 +119,7 @@ builder.Services.AddScoped<INotificationStateCommandService, NotificationStateCo
 builder.Services.AddScoped<INotificationStateRepository, NotificationStateRepository>();
 
 // IAM Bounded Context Injection Configuration
+builder.Services.AddScoped<ExternalSubscriptionService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleCommandService, RoleCommandService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
