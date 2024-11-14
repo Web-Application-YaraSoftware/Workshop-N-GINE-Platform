@@ -10,6 +10,8 @@ public class IotDeviceRepository(AppDbContext context) : BaseRepository<IotDevic
 {
     public async Task<IotDevice?> FindByVehicleIdAsync(long vehicleId)
     {
-        return await Context.Set<IotDevice>().FirstOrDefaultAsync(x => x.VehicleId == vehicleId);
+        return await Context.Set<IotDevice>()
+            .Include(x => x.CodeList)
+            .FirstOrDefaultAsync(x => x.VehicleId == vehicleId);
     }
 }
