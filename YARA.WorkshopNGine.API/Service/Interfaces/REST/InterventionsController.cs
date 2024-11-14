@@ -15,6 +15,22 @@ namespace YARA.WorkshopNGine.API.Service.Interfaces.REST;
 public class InterventionsController(IInterventionCommandService interventionCommandService, IInterventionQueryService interventionQueryService)
     : ControllerBase
 {
+    [HttpGet]
+    [SwaggerOperation(
+        Summary = "Gets all interventions",
+        Description = "Gets all interventions",
+        OperationId = "GetAllInterventions")]
+    [SwaggerResponse(200, "The interventions were found", typeof(IEnumerable<InterventionResource>))]
+    [SwaggerResponse(404, "The interventions were not found")]
+    public async Task<IActionResult> GetAllInterventions([FromQuery] long vehicleId)
+    {
+        if (vehicleId == 0) return BadRequest();
+        var getAllInterventionsByVehicleIdQuery = new GetAllInterventionsByVehicleQuery(vehicleId);
+        var interventions = await interventionQueryService.Handle(getAllInterventionsByVehicleIdQuery);
+        var resources =  interventions.Select(InterventionResourceFromEntityAssembler.ToResourceFromEntity);
+        return Ok(resources);
+    }
+    
     [HttpGet("{interventionId:long}")]
     [SwaggerOperation(
         Summary = "Gets an intervention by id",
