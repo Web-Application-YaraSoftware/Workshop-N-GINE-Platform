@@ -7,6 +7,6 @@ public class SubscriptionItemResourceFromEntityAssembler
 {
     public static SubscriptionItemResource ToResourceFromEntity(SubscriptionItem entity)
     {
-        return new SubscriptionItemResource(entity.Id, entity.WorkshopId.Value, entity.PlanId.Value, entity.StatusToString(), entity.StartedAt, entity.EndedAt, entity.CancelledAt);
+        return new SubscriptionItemResource(entity.Id, entity.WorkshopId.Value, entity.UserId.Value, entity.PlanId.Value, entity.StatusToString(), entity.StartedAt, entity.EndedAt, entity.CancelledAt, entity.IsTrial, entity.TrialEndsAt);
     }
 }
