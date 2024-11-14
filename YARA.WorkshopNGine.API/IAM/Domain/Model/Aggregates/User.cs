@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using YARA.WorkshopNGine.API.IAM.Domain.Model.Commands;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 
 namespace YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
@@ -17,6 +18,14 @@ public class User
     {
         Username = username;
         Password = password;
+    }
+
+    public User(SignUpCommand command, long roleId)
+    {
+        Username = command.Username;
+        Password = command.Password;
+        WorkshopId = command.WorkshopId;
+        RoleId = roleId;
     }
     public User(string username, string password, long roleId, long workshopId)
     {
