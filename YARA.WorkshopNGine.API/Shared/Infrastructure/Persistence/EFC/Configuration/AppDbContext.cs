@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
+using Microsoft.EntityFrameworkCore;
 using YARA.WorkshopNGine.API.Billing.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
@@ -22,7 +23,13 @@ namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configura
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    {
+        base.OnConfiguring(builder);
+        // Enable Audit Fields Interceptors
+        builder.AddCreatedUpdatedInterceptor();
+    }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -199,9 +206,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<SubscriptionItem>().HasKey(s => s.Id);
         builder.Entity<SubscriptionItem>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<SubscriptionItem>().Property(s => s.Status).IsRequired();
-        builder.Entity<SubscriptionItem>().Property(s => s.StartedAt).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.StartedAt);
         builder.Entity<SubscriptionItem>().Property(s => s.EndedAt);
         builder.Entity<SubscriptionItem>().Property(s => s.CancelledAt);
+        builder.Entity<SubscriptionItem>().Property(s => s.IsTrial).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.TrialEndsAt);
         builder.Entity<SubscriptionItem>().OwnsOne(s => s.WorkshopId, workshopId =>
         {
             workshopId.WithOwner().HasForeignKey("Id");
@@ -211,6 +220,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         {
             planId.WithOwner().HasForeignKey("Id");
             planId.Property(p => p.Value).HasColumnName("PlanId").IsRequired();
+        });
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.UserId, userId =>
+        {
+            userId.WithOwner().HasForeignKey("Id");
+            userId.Property(u => u.Value).HasColumnName("UserId").IsRequired();
         });
         
         builder.Entity<Plan>().HasKey(p => p.Id);

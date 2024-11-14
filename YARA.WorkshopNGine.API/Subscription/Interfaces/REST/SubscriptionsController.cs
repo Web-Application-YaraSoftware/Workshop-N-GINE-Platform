@@ -31,6 +31,23 @@ public class SubscriptionsController(ISubscriptionItemCommandService subscriptio
         return Ok(subscriptionItemsResource);
     }
     
+    [HttpGet("latest")]
+    [SwaggerOperation(
+        Summary = "Gets the latest subscription item",
+        Description = "Gets the latest subscription item",
+        OperationId = "GetLatestSubscriptionItem")]
+    [SwaggerResponse(200, "The latest subscription item was found", typeof(SubscriptionItemResource))]
+    [SwaggerResponse(404, "The latest subscription item was not found")]
+    public async Task<IActionResult> GetLatestSubscriptionItemByWorkshopId([FromQuery] long workshopId)
+    {
+        if(workshopId == 0) return BadRequest();
+        var getLatestSubscriptionItemByWorkshopIdQuery = new GetLatestSubscriptionItemByWorkshopIdQuery(workshopId);
+        var subscriptionItem = await subscriptionItemQueryService.Handle(getLatestSubscriptionItemByWorkshopIdQuery);
+        if (subscriptionItem == null) return NotFound();
+        var resource = SubscriptionItemResourceFromEntityAssembler.ToResourceFromEntity(subscriptionItem);
+        return Ok(resource);
+    }
+    
     [HttpPost]
     [SwaggerOperation(
         Summary = "Creates a subscription item",

@@ -5,7 +5,7 @@ namespace YARA.WorkshopNGine.API.Subscription.Domain.Services;
 
 public interface ISubscriptionItemQueryService
 {
-    Task<SubscriptionItem?> Handle(GetSubscriptionItemByWorkshopIdAndStatusIsActiveQuery query);
+    Task<SubscriptionItem?> Handle(GetLatestSubscriptionItemByWorkshopIdQuery query);
     
     Task<IEnumerable<SubscriptionItem>> Handle(GetAllSubscriptionItemsByWorkshopIdQuery query);
 }

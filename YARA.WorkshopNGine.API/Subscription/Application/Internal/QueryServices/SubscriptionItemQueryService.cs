@@ -8,9 +8,9 @@ namespace YARA.WorkshopNGine.API.Subscription.Application.Internal.QueryServices
 
 public class SubscriptionItemQueryService(ISubscriptionItemRepository subscriptionItemRepository, IUnitOfWork unitOfWork) : ISubscriptionItemQueryService
 {
-    public async Task<SubscriptionItem?> Handle(GetSubscriptionItemByWorkshopIdAndStatusIsActiveQuery query)
+    public async Task<SubscriptionItem?> Handle(GetLatestSubscriptionItemByWorkshopIdQuery query)
     {
-        return await subscriptionItemRepository.FindByWorkshopIdAndStatusIsActiveAsync(query.WorkshopId);
+        return await subscriptionItemRepository.FindLastByIdAsync(query.WorkshopId);
     }
 
     public async Task<IEnumerable<SubscriptionItem>> Handle(GetAllSubscriptionItemsByWorkshopIdQuery query)
