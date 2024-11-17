@@ -7,9 +7,5 @@ namespace YARA.WorkshopNGine.API.CommunicationManagement.Infrastructure.Persiste
 
 public class NotificationRepository(AppDbContext context): BaseRepository<Notification>(context), INotificationRepository
 {
-    public async Task AddAsync(Notification notification)
-    {
-        await context.Set<Notification>().AddAsync(notification);
-    }
     
 }

@@ -5,5 +5,7 @@ namespace YARA.WorkshopNGine.API.IAM.Domain.Services;
 
 public interface IUserQueryService
 {
-    Task<IEnumerable<User>> Handle(GetAllUsersByRoleAndWorkshopQuery query);
+    Task<IEnumerable<User>> Handle(GetAllUsersByWorkshopAndRoleIsClientQuery query);
+    
+    Task<IEnumerable<User>> Handle(GetAllUsersByWorkshopAndRoleIsMechanicQuery query);
 }

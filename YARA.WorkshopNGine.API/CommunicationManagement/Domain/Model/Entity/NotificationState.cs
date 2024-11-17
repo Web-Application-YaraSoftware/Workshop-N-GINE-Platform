@@ -5,7 +5,7 @@ namespace YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
 
 public class NotificationState
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public ENotificationState Name { get; set; }
     public ICollection<Notification> Notifications { get;}
     

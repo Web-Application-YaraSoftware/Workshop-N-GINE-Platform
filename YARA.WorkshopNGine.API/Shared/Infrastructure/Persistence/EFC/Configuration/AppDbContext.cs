@@ -1,18 +1,35 @@
+﻿using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using YARA.WorkshopNGine.API.Billing.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Entity;
 using YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.ValueoObjects;
+using YARA.WorkshopNGine.API.Device.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Device.Domain.Model.Enitites;
+using YARA.WorkshopNGine.API.Device.Domain.Model.ValueObjects;
 using YARA.WorkshopNGine.API.Profiles.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
+using YARA.WorkshopNGine.API.Inventory.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Service.Domain.Model.Entities;
 using YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using YARA.WorkshopNGine.API.Subscription.Domain.Model.Aggregates;
+using YARA.WorkshopNGine.API.Subscription.Domain.Model.Entities;
+using Task = YARA.WorkshopNGine.API.Service.Domain.Model.Entities.Task;
 
 namespace YARA.WorkshopNGine.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    {
+        base.OnConfiguring(builder);
+        // Enable Audit Fields Interceptors
+        builder.AddCreatedUpdatedInterceptor();
+    }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -70,6 +87,161 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(p => p.Age);
             entity.Property(p => p.Location).HasMaxLength(100);
             entity.Property(p => p.UserId).IsRequired();
+        });
+        
+        // Service Context
+        builder.Entity<Workshop>().HasKey(w => w.Id);
+        builder.Entity<Workshop>().Property(w => w.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Workshop>().Property(w => w.Name).IsRequired().HasMaxLength(100);
+        
+        builder.Entity<Intervention>().HasKey(i => i.Id);
+        builder.Entity<Intervention>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Intervention>().Property(i => i.WorkshopId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.VehicleId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.MechanicLeaderId).IsRequired();
+        builder.Entity<Intervention>().Property(i => i.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Intervention>()
+            .HasMany(i => i.Tasks)
+            .WithOne(t => t.Intervention)
+            .HasForeignKey(t => t.InterventionId)
+            .IsRequired();
+        
+        builder.Entity<Task>().HasKey(t => t.Id);
+        builder.Entity<Task>().Property(t => t.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Task>().Property(t => t.MechanicAssignedId).IsRequired();
+        builder.Entity<Task>().Property(t => t.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Task>()
+            .HasOne(t => t.Intervention)
+            .WithMany(i => i.Tasks)
+            .HasForeignKey(t => t.InterventionId)
+            .IsRequired();
+        builder.Entity<Task>()
+            .HasMany(t => t.Checkpoints)
+            .WithOne(c => c.Task)
+            .HasForeignKey(c => c.TaskId)
+            .IsRequired();
+        
+        builder.Entity<Checkpoint>().HasKey(c => c.Id);
+        builder.Entity<Checkpoint>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Checkpoint>().Property(c => c.TaskId).IsRequired();
+        builder.Entity<Checkpoint>().Property(c => c.Name).IsRequired().HasMaxLength(240);
+        builder.Entity<Checkpoint>()
+            .HasOne(c => c.Task)
+            .WithMany(t => t.Checkpoints)
+            .HasForeignKey(c => c.TaskId)
+            .IsRequired();
+        
+        builder.Entity<Vehicle>().HasKey(v => v.Id);
+        builder.Entity<Vehicle>().Property(v => v.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Vehicle>().Property(v => v.LicensePlate).IsRequired().HasMaxLength(10);
+        builder.Entity<Vehicle>().Property(v => v.Brand).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.Model).IsRequired().HasMaxLength(30);
+        builder.Entity<Vehicle>().Property(v => v.UserId).IsRequired();
+        
+        // Inventory Context
+        builder.Entity<Product>().HasKey(p => p.Id);
+        builder.Entity<Product>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Product>().Property(p => p.Name).IsRequired().HasMaxLength(100);
+        builder.Entity<Product>().Property(p => p.Description).IsRequired().HasMaxLength(240);
+        builder.Entity<Product>().Property(p => p.StockQuantity).IsRequired();
+        builder.Entity<Product>().Property(p => p.LowStockThreshold).IsRequired();
+        builder.Entity<Product>().OwnsOne(p => p.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+        
+        builder.Entity<ProductRequest>().HasKey(pr => pr.Id);
+        builder.Entity<ProductRequest>().Property(pr => pr.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<ProductRequest>().Property(pr => pr.RequestedQuantity).IsRequired();
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.TaskId, taskId =>
+        {
+            taskId.WithOwner().HasForeignKey("Id");
+            taskId.Property(t => t.Value).HasColumnName("TaskId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.ProductId, productId =>
+        {
+            productId.WithOwner().HasForeignKey("Id");
+            productId.Property(p => p.Value).HasColumnName("ProductId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().OwnsOne(pr => pr.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+        builder.Entity<ProductRequest>().Property(pr => pr.Status).IsRequired();
+        
+      
+        //Device Context
+        builder.Entity<IotDevice>().HasKey(d => d.Id);
+        builder.Entity<IotDevice>().Property(d => d.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<IotDevice>().Property(d => d.VehicleId).IsRequired();
+        builder.Entity<IotDevice>()
+            .HasMany(d => d.CodeList)
+            .WithOne(c => c.IotDevice)
+            .HasForeignKey(c => c.IotDeviceId)
+            .IsRequired();
+        
+        builder.Entity<Code>().HasKey(c => c.Id);
+        builder.Entity<Code>().Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Code>().Property(c => c.Component).IsRequired().HasMaxLength(30);
+        builder.Entity<Code>().Property(c => c.ErrorCode).IsRequired().HasMaxLength(10);
+        builder.Entity<Code>().Property(c => c.Description).IsRequired().HasMaxLength(150);
+        builder.Entity<Code>().Property(c => c.lastUpdated).IsRequired();
+        builder.Entity<Code>().Property(c => c.State).IsRequired().HasConversion(e=>e.ToString(), e=>(ECodeState)Enum.Parse(typeof(ECodeState), e));
+    
+        //Billing Context
+        builder.Entity<Invoice>().HasKey(i => i.Id);
+        builder.Entity<Invoice>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<Invoice>().Property(i => i.Amount).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.Status).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.IssueDate).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.DueDate).IsRequired(); 
+        builder.Entity<Invoice>().Property(i => i.PaymentDate);
+        builder.Entity<Invoice>().Property(i => i.SubscriptionId).IsRequired();
+        builder.Entity<Invoice>().Property(i => i.WorkshopId).IsRequired();
+        
+        
+        // Subscriptions Context
+        builder.Entity<SubscriptionItem>().HasKey(s => s.Id);
+        builder.Entity<SubscriptionItem>().Property(s => s.Id).IsRequired().ValueGeneratedOnAdd();
+        builder.Entity<SubscriptionItem>().Property(s => s.Status).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.StartedAt);
+        builder.Entity<SubscriptionItem>().Property(s => s.EndedAt);
+        builder.Entity<SubscriptionItem>().Property(s => s.CancelledAt);
+        builder.Entity<SubscriptionItem>().Property(s => s.IsTrial).IsRequired();
+        builder.Entity<SubscriptionItem>().Property(s => s.TrialEndsAt);
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.WorkshopId, workshopId =>
+        {
+            workshopId.WithOwner().HasForeignKey("Id");
+            workshopId.Property(w => w.Value).HasColumnName("WorkshopId").IsRequired();
+        });
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.PlanId, planId =>
+        {
+            planId.WithOwner().HasForeignKey("Id");
+            planId.Property(p => p.Value).HasColumnName("PlanId").IsRequired();
+        });
+        builder.Entity<SubscriptionItem>().OwnsOne(s => s.UserId, userId =>
+        {
+            userId.WithOwner().HasForeignKey("Id");
+            userId.Property(u => u.Value).HasColumnName("UserId").IsRequired();
+        });
+        
+        builder.Entity<Plan>().HasKey(p => p.Id);
+        builder.Entity<Plan>().Property(p => p.Id).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Price).IsRequired();
+        builder.Entity<Plan>().Property(p => p.DurationInMonths).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Type).IsRequired();
+        builder.Entity<Plan>().Property(p => p.Cycle).IsRequired();
+        builder.Entity<Plan>().OwnsOne(p => p.Limitations, limitations =>
+        {
+            limitations.WithOwner().HasForeignKey("Id");
+            limitations.Property(l => l.MaxMechanics).HasColumnName("MaxMechanics").IsRequired();
+            limitations.Property(l => l.MaxClients).HasColumnName("MaxClients").IsRequired();
+            limitations.Property(l => l.MaxActiveInterventions).HasColumnName("MaxActiveInterventions").IsRequired();
+            limitations.Property(l => l.MaxTasksPerMechanic).HasColumnName("MaxTasksPerMechanic").IsRequired();
+            limitations.Property(l => l.MaxItems).HasColumnName("MaxItems").IsRequired();
+            limitations.Property(l => l.MetricsAvailable).HasColumnName("MetricsAvailable").IsRequired();
         });
         
         // Apply SnakeCase Naming Convention

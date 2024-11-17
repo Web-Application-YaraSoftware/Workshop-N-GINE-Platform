@@ -5,12 +5,12 @@ namespace YARA.WorkshopNGine.API.CommunicationManagement.Domain.Model.Aggregates
 
 public partial class Notification
 {
-    public int Id { get; private set; }
+    public long Id { get; private set; }
     public DateTime Date { get; private set; }
     public string Content { get; private set; }
-    public int UserId { get; private set; }
+    public long UserId { get; private set; }
     public NotificationState State { get; private set; }
-    public int StateId { get; private set; }
+    public long StateId { get; private set; }
     public string Endpoints { get; private set; }
     
     public Notification() { }
