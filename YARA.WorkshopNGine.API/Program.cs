@@ -25,11 +25,16 @@ using YARA.WorkshopNGine.API.Profiles.interfaces.ACL;
 using YARA.WorkshopNGine.API.Profiles.interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.EventHandlers;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.IAM.Application.Internal.QueryServices;
 using YARA.WorkshopNGine.API.IAM.Domain.Repositories;
 using YARA.WorkshopNGine.API.IAM.Domain.Services;
+using YARA.WorkshopNGine.API.IAM.Infrastructure.Hashing.BCrypt.Services;
 using YARA.WorkshopNGine.API.IAM.Infrastructure.Persistence.EFC.Repositories;
+using YARA.WorkshopNGine.API.IAM.Infrastructure.Pipeline.Middleware.Extensions;
+using YARA.WorkshopNGine.API.IAM.Infrastructure.Tokens.JWT.Configuration;
+using YARA.WorkshopNGine.API.IAM.Infrastructure.Tokens.JWT.Services;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL;
 using YARA.WorkshopNGine.API.IAM.Interfaces.ACL.Services;
 using YARA.WorkshopNGine.API.Inventory.Application.Internal.CommandServices;
@@ -99,7 +104,32 @@ builder.Services.AddSwaggerGen(
             Name = "Apache 2.0",
             Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0.html")
         }
-    }); });
+    }); 
+    c.EnableAnnotations();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+    });
 
 // Configure Dependency Injection
 
@@ -125,8 +155,12 @@ builder.Services.AddScoped<IRoleCommandService, RoleCommandService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
+//TokenSettings Configuration
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
 // Service Bounded Context Injection Configuration
 builder.Services.AddScoped<ExternalIamService>();
 builder.Services.AddScoped<ExternalProfileService>();
@@ -197,6 +231,9 @@ app.UseSwaggerUI();
 
 // Add CORS Middleware to ASP.NET Core Pipeline
 app.UseCors("AllowAllPolicy");
+
+// Add Middleware for Request Authorization
+app.UseRequestAuthorization();
 
 app.UseHttpsRedirection();
 
