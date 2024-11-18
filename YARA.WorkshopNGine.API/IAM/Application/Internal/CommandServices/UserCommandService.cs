@@ -1,4 +1,5 @@
-﻿using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices.ACL;
+﻿using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices;
+using YARA.WorkshopNGine.API.IAM.Application.Internal.OutboundServices.ACL;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Aggregates;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.Commands;
 using YARA.WorkshopNGine.API.IAM.Domain.Model.ValueObjects;
@@ -8,14 +9,15 @@ using YARA.WorkshopNGine.API.Shared.Domain.Repositories;
 
 namespace YARA.WorkshopNGine.API.IAM.Application.Internal.CommandServices;
 
-public class UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork, ExternalSubscriptionService externalSubscriptionService) : IUserCommandService
+public class UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork, ITokenService tokenService, IHashingService hashingService, ExternalSubscriptionService externalSubscriptionService) : IUserCommandService
 {
     public async Task Handle(SignUpCommand command)
     {
         if (userRepository.ExistsByUsername(command.Username))
             throw new Exception($"Username {command.Username} already exists.");
+        var hashedPassword = hashingService.HashPassword(command.Password);
         const long roleOwner = (long)Roles.WorkshopOwner;
-        var user = new User(command, roleOwner);
+        var user = new User(command.Username, hashedPassword, roleOwner, command.WorkshopId);
         try
         {
             await userRepository.AddAsync(user);
@@ -28,12 +30,13 @@ public class UserCommandService(IUserRepository userRepository, IUnitOfWork unit
         }
     }
 
-    public async Task<User> Handle(SignInCommand command)
+    public async Task<(User user, string token)> Handle(SignInCommand command)
     {
         var user = await userRepository.FindByUsernameAsync(command.Username);
-        if (user is null || !userRepository.VerifyPassword(command.Username, command.Password))
+        if (user is null || !userRepository.VerifyPassword(command.Username, user.Password))
             throw new Exception("Invalid username or password.");
-        return user;
+        var token = tokenService.GenerateToken(user);
+        return (user, token);
     }
 
     public async Task<User> Handle(CreateUserWithRoleClientCommand command)
