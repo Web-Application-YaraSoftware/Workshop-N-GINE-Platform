@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using YARA.WorkshopNGine.API.Service.Domain.Model.Queries;
@@ -31,6 +32,7 @@ public class WorkshopsController(IWorkshopCommandService workshopCommandService,
     }
     
     [HttpPost]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Creates a workshop",
         Description = "Creates a workshop with a given name",
