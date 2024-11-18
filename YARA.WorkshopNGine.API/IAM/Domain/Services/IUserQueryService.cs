@@ -8,4 +8,6 @@ public interface IUserQueryService
     Task<IEnumerable<User>> Handle(GetAllUsersByWorkshopAndRoleIsClientQuery query);
     
     Task<IEnumerable<User>> Handle(GetAllUsersByWorkshopAndRoleIsMechanicQuery query);
+    
+    Task<User> Handle(GetUserByIdQuery query);
 }

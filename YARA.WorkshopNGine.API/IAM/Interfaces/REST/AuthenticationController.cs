@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using YARA.WorkshopNGine.API.IAM.Domain.Services;
@@ -13,6 +14,7 @@ namespace YARA.WorkshopNGine.API.IAM.Interfaces.REST;
 public class AuthenticationController(IUserCommandService userCommandService) : ControllerBase
 {
     [HttpPost("sign-up")]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Sign up",
         Description = "Sign up a new user",
@@ -27,6 +29,7 @@ public class AuthenticationController(IUserCommandService userCommandService) : 
     }
     
     [HttpPost("sign-in")]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Sign in",
         Description = "Sign in an existing user",
@@ -37,7 +40,7 @@ public class AuthenticationController(IUserCommandService userCommandService) : 
     {
         var signInCommand = SignInCommandFromResourceAssembler.ToCommandFromResource(resource);
         var authenticatedUser = await userCommandService.Handle(signInCommand);
-        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser);
+        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(authenticatedUser.user, authenticatedUser.token);
         return Ok(authenticatedUserResource);
     }
 }

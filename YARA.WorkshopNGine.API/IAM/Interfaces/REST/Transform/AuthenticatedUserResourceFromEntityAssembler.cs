@@ -5,8 +5,8 @@ namespace YARA.WorkshopNGine.API.IAM.Interfaces.REST.Transform;
 
 public static class AuthenticatedUserResourceFromEntityAssembler
 {
-    public static AuthenticatedUserResource ToResourceFromEntity(User entity)
+    public static AuthenticatedUserResource ToResourceFromEntity(User entity, string token)
     {
-        return new AuthenticatedUserResource(entity.Id, entity.Username, entity.RoleId, entity.WorkshopId);
+        return new AuthenticatedUserResource(entity.Id, entity.Username, entity.RoleId, entity.WorkshopId, token);
     }
 };

@@ -17,4 +17,9 @@ public class UserQueryService(IUserRepository userRepository) : IUserQueryServic
     {
         return await userRepository.FindAllByRoleAndWorkshopAsync(query.WorkshopId, (long)Roles.Mechanic);
     }
+
+    public async Task<User> Handle(GetUserByIdQuery query)
+    {
+        return await userRepository.FindByIdAsync(query.UserId);
+    }
 }
